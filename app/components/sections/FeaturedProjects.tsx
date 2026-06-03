@@ -2,7 +2,7 @@ import { ArrowRight } from 'lucide-react'
 
 import type { HomeSectionCopy, ProjectListItem } from '~/lib/types'
 
-import { SIZES } from '~/lib/image'
+import { projectMeta } from '~/lib/format'
 import { projectHref } from '~/lib/link'
 
 import { Image } from '~/components/Image'
@@ -49,7 +49,7 @@ export function FeaturedProjects({
       {/* Full-bleed scroll-snap row; cards snap to the page gutter. */}
       <div className="snap-row no-scrollbar flex gap-6 overflow-x-auto px-5 pb-16 sm:px-8 lg:px-12">
         {projects.map((p) => {
-          const meta = [p.location, p.year].filter(Boolean).join(' · ')
+          const meta = projectMeta(p)
           return (
             <SmartLink
               key={p._id}

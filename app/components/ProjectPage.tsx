@@ -1,5 +1,6 @@
 import type { ProjectData } from '~/lib/types'
 
+import { projectMeta } from '~/lib/format'
 import { Gallery } from '~/components/Gallery'
 import { PortableText } from '~/components/PortableText'
 import { SmartLink } from '~/components/SmartLink'
@@ -26,7 +27,7 @@ export function ProjectPage({
   quoteLabel: string
 }) {
   const { title, location, year, summary, gallery, body } = data
-  const meta = [location, year].filter(Boolean).join(' · ')
+  const meta = projectMeta({ location, year })
   const photos = (gallery ?? []).filter(Boolean)
   const hasBody = Boolean(body && body.length > 0)
 

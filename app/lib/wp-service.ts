@@ -14,16 +14,12 @@
  * `node --experimental-strip-types` (no path-alias resolver there).
  */
 import { cleanWpBody } from './wp-body.ts'
+import { decodeInline, excerptText, firstParagraph } from './wp-text.ts'
 
 import type { PortableTextBlock } from './wp-body.ts'
+import type { WpPage } from './wp-text.ts'
 
-/** The slice of the WordPress REST page shape the mapper reads. */
-export type WpPage = {
-  slug: string
-  title: { rendered: string }
-  excerpt?: { rendered: string } | null
-  content: { rendered: string }
-}
+export type { WpPage }
 
 /** Seedable `service` content — pure data; the seed adds the uploaded `photo` ref. */
 export type ServiceSeedDoc = {
@@ -38,34 +34,11 @@ export type ServiceSeedDoc = {
   order: number
 }
 
-/** Flatten Portable Text blocks back to plain prose. */
-function plainText(blocks: PortableTextBlock[]): string {
-  return blocks.map((b) => b.children.map((c) => c.text).join('')).join(' ')
-}
-
-/** Decode a short inline string (e.g. the title) by routing it through the cleaner. */
-function decodeInline(html: string): string {
-  return plainText(cleanWpBody(`<p>${html}</p>`).portableText)
-}
-
-/**
- * Text of the first real paragraph — skips a leading heading block so a card
- * description never echoes the section title (e.g. "Postopek sanacije").
- */
-function firstParagraph(blocks: PortableTextBlock[]): string {
-  const para = blocks.find((b) => b.style === 'normal') ?? blocks[0]
-  return para ? para.children.map((c) => c.text).join('') : ''
-}
-
 export function wpPageToService(page: WpPage, order: number): ServiceSeedDoc {
   const { portableText: steps, gallery } = cleanWpBody(page.content.rendered)
 
-  // Short description: prefer the excerpt, falling back to the first body block.
-  // Drop WordPress's "[…]" read-more tail — that is formatting junk, not copy.
-  const excerptText = plainText(cleanWpBody(page.excerpt?.rendered).portableText)
-    .replace(/\s*\[…\]\s*$/, '')
-    .trim()
-  const description = excerptText || firstParagraph(steps)
+  // Short description: prefer the excerpt, falling back to the first real paragraph.
+  const description = excerptText(page.excerpt?.rendered) || firstParagraph(steps)
 
   return {
     _id: `service.${page.slug}`,

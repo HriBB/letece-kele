@@ -61,15 +61,8 @@ export type ServiceListItem = {
   steps?: PortableTextBlock[] | null
 }
 
-/** A single service for the /storitve/:slug detail page. */
-export type ServiceData = {
-  _id: string
-  title: string
-  description?: string
-  slug: string
-  photo: SanityImage | null
-  steps?: PortableTextBlock[] | null
-}
+/** A single service for the /storitve/:slug detail page — same shape as the listing item. */
+export type ServiceData = ServiceListItem
 
 /** A project (sl: reference) as shown on the /reference listing card. */
 export type ProjectListItem = {

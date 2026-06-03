@@ -7,6 +7,7 @@ import { useSanity } from '~/sanity/data'
 import { projectsQuery } from '~/sanity/queries'
 import { pageMeta } from '~/lib/meta'
 import { projectHref } from '~/lib/link'
+import { projectMeta } from '~/lib/format'
 import { SIZES } from '~/lib/image'
 
 import { Image } from '~/components/Image'
@@ -33,7 +34,7 @@ export default function ReferencesPage() {
 
       <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {projects.map((p) => {
-          const meta = [p.location, p.year].filter(Boolean).join(' · ')
+          const meta = projectMeta(p)
           return (
             <SmartLink
               key={p._id}

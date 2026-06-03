@@ -25,6 +25,7 @@ import { wpPostToProject } from '../app/lib/wp-project.ts'
 import { wpPagesToAbout } from '../app/lib/wp-about.ts'
 
 import type { WpPost } from '../app/lib/wp-project.ts'
+import type { WpPage } from '../app/lib/wp-text.ts'
 
 const projectId = process.env.SANITY_PROJECT_ID
 const dataset = process.env.SANITY_DATASET ?? 'production'
@@ -75,13 +76,6 @@ const ALPINIST_STORY: WpPage = {
       'fasad, dimnikov, mostov in jeklenih konstrukcij — brez gradbenih odrov. Delo na ' +
       'višini ni naš konjiček, ampak poklicna prednost: hitreje, ceneje in z manj posegi v okolico.</p>',
   },
-}
-
-type WpPage = {
-  slug: string
-  title: { rendered: string }
-  excerpt?: { rendered: string } | null
-  content: { rendered: string }
 }
 
 async function fetchWpPage(id: number): Promise<WpPage> {

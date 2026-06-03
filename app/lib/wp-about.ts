@@ -16,16 +16,12 @@
  * resolver there).
  */
 import { cleanWpBody } from './wp-body.ts'
+import { decodeInline, excerptText } from './wp-text.ts'
 
 import type { GalleryImage, PortableTextBlock } from './wp-body.ts'
+import type { WpPage } from './wp-text.ts'
 
-/** The slice of the WordPress REST page shape the merger reads. */
-export type WpPage = {
-  slug: string
-  title: { rendered: string }
-  excerpt?: { rendered: string } | null
-  content: { rendered: string }
-}
+export type { WpPage }
 
 /** Seedable `aboutPage` content — pure data; the seed uploads the hero image. */
 export type AboutSeedDoc = {
@@ -36,16 +32,6 @@ export type AboutSeedDoc = {
   body: PortableTextBlock[]
   /** Remote WordPress upload URL for the hero (seed uploads it as an asset). */
   heroUrl?: string
-}
-
-/** Flatten Portable Text blocks back to plain prose. */
-function plainText(blocks: PortableTextBlock[]): string {
-  return blocks.map((b) => b.children.map((c) => c.text).join('')).join(' ')
-}
-
-/** Decode a short inline string (e.g. a title) by routing it through the cleaner. */
-function decodeInline(html: string): string {
-  return plainText(cleanWpBody(`<p>${html}</p>`).portableText)
 }
 
 /** An h2 section heading delineating one former stub page within the merged body. */
@@ -84,11 +70,8 @@ export function wpPagesToAbout(pages: WpPage[]): AboutSeedDoc {
     children: b.children.map((c, j) => ({ ...c, _key: `b${i}s${j}` })),
   }))
 
-  // Short intro: the first page's excerpt, dropping WordPress's "[…]" read-more tail
-  // (formatting junk, not copy).
-  const intro = plainText(cleanWpBody(first?.excerpt?.rendered).portableText)
-    .replace(/\s*\[…\]\s*$/, '')
-    .trim()
+  // Short intro: the first page's excerpt (read-more tail dropped by the shared helper).
+  const intro = excerptText(first?.excerpt?.rendered)
 
   return {
     _id: 'aboutPage',

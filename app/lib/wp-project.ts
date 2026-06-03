@@ -24,6 +24,7 @@
  * `node --experimental-strip-types` (no path-alias resolver there).
  */
 import { cleanWpBody } from './wp-body.ts'
+import { decodeInline, excerptText, firstParagraph } from './wp-text.ts'
 
 import type { GalleryImage, PortableTextBlock } from './wp-body.ts'
 
@@ -34,25 +35,6 @@ export type WpPost = {
   title: { rendered: string }
   excerpt?: { rendered: string } | null
   content: { rendered: string }
-}
-
-/** Flatten Portable Text blocks back to plain prose. */
-function plainText(blocks: PortableTextBlock[]): string {
-  return blocks.map((b) => b.children.map((c) => c.text).join('')).join(' ')
-}
-
-/** Decode a short inline string (e.g. the title) by routing it through the cleaner. */
-function decodeInline(html: string): string {
-  return plainText(cleanWpBody(`<p>${html}</p>`).portableText)
-}
-
-/**
- * Text of the first real paragraph — skips a leading heading block so the listing
- * summary never just repeats the project title (which is the body's first <h2>).
- */
-function firstParagraph(blocks: PortableTextBlock[]): string {
-  const para = blocks.find((b) => b.style === 'normal') ?? blocks[0]
-  return para ? para.children.map((c) => c.text).join('') : ''
 }
 
 /** Seedable `project` content — pure data; the seed uploads each gallery image. */
@@ -77,12 +59,8 @@ export function wpPostToProject(post: WpPost, order: number): ProjectSeedDoc {
 
   const { portableText: body, gallery: galleryUrls } = cleanWpBody(post.content.rendered)
 
-  // Short summary: prefer the excerpt, falling back to the first body block.
-  // Drop WordPress's "[…]" read-more tail — that is formatting junk, not copy.
-  const excerptText = plainText(cleanWpBody(post.excerpt?.rendered).portableText)
-    .replace(/\s*\[…\]\s*$/, '')
-    .trim()
-  const summary = excerptText || firstParagraph(body)
+  // Short summary: prefer the excerpt, falling back to the first real paragraph.
+  const summary = excerptText(post.excerpt?.rendered) || firstParagraph(body)
 
   return {
     _id: `project.${post.slug}`,
