@@ -46,6 +46,15 @@ function decodeInline(html: string): string {
   return plainText(cleanWpBody(`<p>${html}</p>`).portableText)
 }
 
+/**
+ * Text of the first real paragraph — skips a leading heading block so the listing
+ * summary never just repeats the project title (which is the body's first <h2>).
+ */
+function firstParagraph(blocks: PortableTextBlock[]): string {
+  const para = blocks.find((b) => b.style === 'normal') ?? blocks[0]
+  return para ? para.children.map((c) => c.text).join('') : ''
+}
+
 /** Seedable `project` content — pure data; the seed uploads each gallery image. */
 export type ProjectSeedDoc = {
   _id: string
@@ -73,7 +82,7 @@ export function wpPostToProject(post: WpPost, order: number): ProjectSeedDoc {
   const excerptText = plainText(cleanWpBody(post.excerpt?.rendered).portableText)
     .replace(/\s*\[…\]\s*$/, '')
     .trim()
-  const summary = excerptText || plainText(body.slice(0, 1))
+  const summary = excerptText || firstParagraph(body)
 
   return {
     _id: `project.${post.slug}`,

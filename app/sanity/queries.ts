@@ -101,7 +101,7 @@ export const HOME_QUERY = groq`{
     stats[]{ value, label },
     story{ eyebrow, heading, paragraphs, cta },
     servicesSection{ eyebrow, heading, intro },
-    whyUs{ eyebrow, heading, items[]{ title, body } },
+    whyUs{ eyebrow, heading, intro, items[]{ title, body } },
     featuredSection{ eyebrow, heading, intro },
     contact{ eyebrow, heading, text }
   },

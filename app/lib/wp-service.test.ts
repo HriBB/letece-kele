@@ -74,8 +74,12 @@ describe('wpPageToService', () => {
     )
   })
 
-  it('falls back to the first body paragraph when there is no excerpt', () => {
+  it('falls back to the first body paragraph (skipping a leading heading) when there is no excerpt', () => {
     const noExcerpt = { ...wpPage, excerpt: undefined }
-    expect(wpPageToService(noExcerpt, 0).description).toBe('Postopek sanacije')
+    // The body opens with an <h2>; the card description must skip the heading and use
+    // the first real paragraph rather than echoing the section title.
+    expect(wpPageToService(noExcerpt, 0).description).toBe(
+      'Najprej pregledamo betonsko površino in odstranimo nevezane delce.',
+    )
   })
 })

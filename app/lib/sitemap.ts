@@ -8,8 +8,19 @@ const STATIC_PATHS = ['/', '/storitve', '/reference', '/o-podjetju', '/kontakt']
 
 type SitemapUrl = { loc: string; lastmod?: string }
 
+/** Escape the five XML predefined entities so a `&`/`<` in a host or slug can't break the doc. */
+function xmlEscape(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
+}
+
 function urlTag({ loc, lastmod }: SitemapUrl): string {
-  return `  <url><loc>${loc}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}</url>`
+  const lm = lastmod ? `<lastmod>${xmlEscape(lastmod)}</lastmod>` : ''
+  return `  <url><loc>${xmlEscape(loc)}</loc>${lm}</url>`
 }
 
 /**

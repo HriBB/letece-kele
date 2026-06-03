@@ -48,6 +48,15 @@ function decodeInline(html: string): string {
   return plainText(cleanWpBody(`<p>${html}</p>`).portableText)
 }
 
+/**
+ * Text of the first real paragraph — skips a leading heading block so a card
+ * description never echoes the section title (e.g. "Postopek sanacije").
+ */
+function firstParagraph(blocks: PortableTextBlock[]): string {
+  const para = blocks.find((b) => b.style === 'normal') ?? blocks[0]
+  return para ? para.children.map((c) => c.text).join('') : ''
+}
+
 export function wpPageToService(page: WpPage, order: number): ServiceSeedDoc {
   const { portableText: steps, gallery } = cleanWpBody(page.content.rendered)
 
@@ -56,7 +65,7 @@ export function wpPageToService(page: WpPage, order: number): ServiceSeedDoc {
   const excerptText = plainText(cleanWpBody(page.excerpt?.rendered).portableText)
     .replace(/\s*\[…\]\s*$/, '')
     .trim()
-  const description = excerptText || plainText(steps.slice(0, 1))
+  const description = excerptText || firstParagraph(steps)
 
   return {
     _id: `service.${page.slug}`,

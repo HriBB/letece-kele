@@ -27,4 +27,17 @@ describe('buildSitemapXml', () => {
     // Project without an updatedAt emits no <lastmod>.
     expect(xml).toContain('<url><loc>https://letecekele.si/reference/preglov-trg-10</loc></url>')
   })
+
+  it('XML-escapes the loc so an & or < in the origin or a slug cannot break the document', () => {
+    const xml = buildSitemapXml({
+      origin: 'https://host/?a=1&b=2',
+      services: [{ slug: 's<x>' }],
+      projects: [],
+    })
+
+    // Raw & / < would make the sitemap invalid XML; they must be entity-escaped.
+    expect(xml).toContain('https://host/?a=1&amp;b=2')
+    expect(xml).not.toMatch(/<loc>[^<]*&(?!amp;|lt;|gt;|quot;|apos;)/)
+    expect(xml).toContain('/storitve/s&lt;x&gt;')
+  })
 })

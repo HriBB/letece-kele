@@ -81,9 +81,13 @@ describe('wpPostToProject', () => {
     ])
   })
 
-  it('falls back to the first body paragraph when there is no excerpt', () => {
+  it('falls back to the first body paragraph (skipping a leading heading) when there is no excerpt', () => {
     const noExcerpt = { ...wpPost, excerpt: undefined }
-    expect(wpPostToProject(noExcerpt, 0).summary).toBe('Preglov trg 10')
+    // Body opens with an <h2>; the summary must skip it and use the first paragraph,
+    // not repeat the project title as both heading and summary.
+    expect(wpPostToProject(noExcerpt, 0).summary).toBe(
+      'Sredi Fužin — sanacija betonske fasade s pomočjo vrvne tehnike.',
+    )
   })
 
   // ADR 0003 — one type, two depths: a caption-only "Reference"-style post has no
