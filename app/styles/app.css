@@ -1,0 +1,109 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/space-grotesk';
+@import '@fontsource-variable/manrope';
+@plugin '@tailwindcss/typography';
+
+/* ============================================================
+   Leteče Kele — prototype theme. LIGHT ONLY (no dark mode).
+   Shared across all 5 variants: brand orange + neutral ink.
+   Each variant owns its own layout; this file only provides
+   tokens + a few primitives. THROWAWAY prototype styling.
+   ============================================================ */
+
+:root {
+  /* brand */
+  --orange: #f58220; /* safety-orange accent, keep from old site */
+  --orange-dark: #d96a0c;
+  --ink: #16181d;
+  --ink-soft: #3d424d;
+  --paper: #ffffff;
+  --bone: #f6f4f0; /* warm off-white */
+  --bone-2: #efe9e1;
+  --line: rgb(22 24 29 / 0.1);
+
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-grotesk: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-manrope: 'Manrope Variable', ui-sans-serif, system-ui, sans-serif;
+
+  /* shadcn-ish semantic tokens (light) */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --primary: var(--orange);
+  --primary-foreground: #ffffff;
+  --muted: var(--bone);
+  --muted-foreground: var(--ink-soft);
+  --border: var(--line);
+  --ring: var(--orange);
+  --radius: 0.75rem;
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-grotesk: var(--font-grotesk);
+  --font-manrope: var(--font-manrope);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+
+  /* raw brand colors → bg-orange, text-ink, bg-bone, etc. */
+  --color-orange: var(--orange);
+  --color-orange-dark: var(--orange-dark);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-paper: var(--paper);
+  --color-bone: var(--bone);
+  --color-bone-2: var(--bone-2);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 12px);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.011em;
+  }
+}
+
+@layer components {
+  /* shared container + section rhythm — variants may override */
+  .container-page {
+    @apply mx-auto w-full max-w-[1240px] px-5 sm:px-8 lg:px-12;
+  }
+}
+
+@layer utilities {
+  /* pure-CSS scroll-snap slider helpers (no carousel lib) */
+  .snap-row {
+    scroll-snap-type: x mandatory;
+  }
+  .snap-start {
+    scroll-snap-align: start;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
