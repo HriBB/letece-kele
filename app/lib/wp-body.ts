@@ -104,10 +104,15 @@ export function cleanWpBody(html: string | null | undefined): CleanedWpBody {
     // 2. [gallery] / [gallery ids="…"] shortcodes
     .replace(/\[gallery\b[^\]]*\]/gi, '')
 
-  // 3. lift embedded <img> out of the prose, in document order
+  // 3. lift embedded <img> out of the prose, in document order. Skip WordPress
+  // system images under /wp-includes/ (the classic `[gallery]` shortcode leaves a
+  // tinymce placeholder `t.gif` in the rendered HTML) — real uploads live under
+  // /wp-content/uploads/, these are editor chrome and 404 on fetch.
   s = s.replace(/<img\b[^>]*>/gi, (tag) => {
     const src = attr(tag, 'src')
-    if (src) gallery.push({ src, alt: attr(tag, 'alt') ?? '' })
+    if (src && !src.includes('/wp-includes/')) {
+      gallery.push({ src, alt: attr(tag, 'alt') ?? '' })
+    }
     return ''
   })
 
