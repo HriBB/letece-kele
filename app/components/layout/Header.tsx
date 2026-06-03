@@ -31,6 +31,7 @@ export function Header({ site }: { site: SiteData }) {
               sizes="220px"
               alt={site.settings?.title ?? 'Leteče Kele'}
               priority
+              blurUp={false}
               className="h-9 w-auto"
             />
           ) : (

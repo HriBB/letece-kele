@@ -39,6 +39,12 @@ const client = createClient({ projectId, dataset, apiVersion, token, useCdn: fal
 
 const key = () => randomUUID().replace(/-/g, '').slice(0, 12)
 
+// Authored singletons (homePage + aboutPage section copy) are createIfNotExists so a
+// re-seed never clobbers wording a human refined in Studio (ADR 0005: "one-off content
+// fixes happen in the Studio afterwards"). Migrated docs (service/project) stay
+// createOrReplace so re-running re-migrates them. Set SEED_FORCE=1 to overwrite anyway.
+const FORCE_AUTHORED = process.env.SEED_FORCE === '1'
+
 // ---- WordPress source (ADR 0005) ----
 // The five service pages: parent id 30 → child ids, in display order.
 const WP_BASE = process.env.WP_BASE_URL ?? 'https://letecekele.si'
@@ -93,20 +99,29 @@ async function fetchWpPostsByCategory(categoryId: number): Promise<WpPost[]> {
   return (await res.json()) as WpPost[]
 }
 
-/** Upload a remote WordPress image and return a `figure` referencing the asset. */
+// One download+upload per distinct source URL within a seed run — a WP image reused
+// across posts (shared hero/category shots) resolves to one Sanity asset, not N.
+const assetByUrl = new Map<string, string>()
+
+/** Upload a remote WordPress image (memoised by URL) and return a `figure` ref. */
 async function uploadFigure(
   url: string | undefined,
   alt: string,
 ): Promise<Record<string, unknown> | undefined> {
   if (!url) return undefined
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`image ${url}: HTTP ${res.status}`)
-  const filename = decodeURIComponent(url.split('/').pop() ?? 'photo.jpg')
-  const buffer = Buffer.from(await res.arrayBuffer())
-  const asset = await client.assets.upload('image', buffer, { filename })
+  let assetId = assetByUrl.get(url)
+  if (!assetId) {
+    const res = await fetch(url)
+    if (!res.ok) throw new Error(`image ${url}: HTTP ${res.status}`)
+    const filename = decodeURIComponent(url.split('/').pop() ?? 'photo.jpg')
+    const buffer = Buffer.from(await res.arrayBuffer())
+    const asset = await client.assets.upload('image', buffer, { filename })
+    assetId = asset._id
+    assetByUrl.set(url, assetId)
+  }
   return {
     _type: 'figure',
-    asset: { _type: 'reference', _ref: asset._id },
+    asset: { _type: 'reference', _ref: assetId },
     alt,
   }
 }
@@ -118,7 +133,7 @@ async function seedServices() {
     const { photoUrl, ...doc } = wpPageToService(page, i)
     const photo = await uploadFigure(photoUrl, doc.title)
     await client.createOrReplace({ ...doc, photo })
-    console.log(`  ✓ service.${doc.slug} ("${doc.title}")`)
+    console.log(`  ✓ service.${doc.slug.current} ("${doc.title}")`)
   }
 }
 
@@ -153,8 +168,9 @@ async function seedAbout() {
   // Merge the about pages + the authored alpinist story into the one singleton.
   const { heroUrl, ...doc } = wpPagesToAbout([...pages, ALPINIST_STORY])
   const heroImage = await uploadFigure(heroUrl, doc.title)
-  await client.createOrReplace({ ...doc, heroImage })
-  console.log(`  ✓ aboutPage ("${doc.title}")`)
+  const about = { ...doc, heroImage }
+  await (FORCE_AUTHORED ? client.createOrReplace(about) : client.createIfNotExists(about))
+  console.log(`  ✓ aboutPage ("${doc.title}")${FORCE_AUTHORED ? '' : ' (createIfNotExists)'}`)
 }
 
 const NAV = [
@@ -300,8 +316,8 @@ async function main() {
   await seedAbout()
   console.log('✓ seeded aboutPage')
 
-  await client.createOrReplace(homePage)
-  console.log('✓ seeded homePage')
+  await (FORCE_AUTHORED ? client.createOrReplace(homePage) : client.createIfNotExists(homePage))
+  console.log(`✓ seeded homePage${FORCE_AUTHORED ? '' : ' (createIfNotExists)'}`)
 }
 
 main().catch((err) => {

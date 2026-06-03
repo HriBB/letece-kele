@@ -13,6 +13,12 @@ type ImageProps = {
   priority?: boolean
   widths?: readonly number[]
   quality?: number
+  /**
+   * Paint the LQIP blur behind the image while it loads. Default true. Set false for
+   * transparent assets (e.g. a logo PNG) where the blur would show through the
+   * transparent pixels as a permanent halo.
+   */
+  blurUp?: boolean
 }
 
 /**
@@ -30,11 +36,12 @@ export function Image({
   priority = false,
   widths,
   quality,
+  blurUp = true,
 }: ImageProps) {
   const props = buildImageProps(image, { sizes, aspectRatio, widths, quality })
   if (!props) return null
 
-  const lqip = lqipOf(image)
+  const lqip = blurUp ? lqipOf(image) : undefined
   const fallbackAlt =
     typeof image === 'object' && image && 'alt' in image
       ? (image as { alt?: string }).alt
