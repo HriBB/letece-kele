@@ -14,7 +14,8 @@ export default [
     route('reference/:slug', './routes/website/referenca.tsx'),
     // about (#6) — the merged company story singleton
     route('o-podjetju', './routes/website/o-podjetju.tsx'),
-    // contact route group lands in a later slice.
+    // contact (#7) — info-only /kontakt rendered from siteSettings (ADR 0002, no form)
+    route('kontakt', './routes/website/kontakt.tsx'),
   ]),
   // Embedded Sanity Studio.
   route('studio/*', './routes/studio.tsx'),
