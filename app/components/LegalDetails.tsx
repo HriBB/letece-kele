@@ -8,15 +8,29 @@ import { cn } from '~/lib/utils'
  * fields, labels and order so the two surfaces can't list different company data.
  * Each caller supplies its own panel + heading; `tone` switches the palette.
  */
-export function LegalDetails({ legal, tone = 'ink' }: { legal: Legal; tone?: 'ink' | 'paper' }) {
+export function LegalDetails({
+  legal,
+  tone = 'ink',
+}: {
+  legal: Legal
+  tone?: 'ink' | 'paper'
+}) {
   const dtClass = tone === 'paper' ? 'text-paper/50' : 'text-ink-soft'
   const ddClass = tone === 'paper' ? 'font-semibold' : 'font-semibold text-ink'
 
   const rows = [
-    legal.companyName && { label: 'Podjetje', value: legal.companyName, wide: true },
+    legal.companyName && {
+      label: 'Podjetje',
+      value: legal.companyName,
+      wide: true,
+    },
     legal.vat && { label: 'Davčna št.', value: legal.vat },
     legal.reg && { label: 'Matična št.', value: legal.reg },
-    legal.bankIban && { label: legal.bankName ?? 'Banka', value: legal.bankIban, wide: true },
+    legal.bankIban && {
+      label: legal.bankName ?? 'Banka',
+      value: legal.bankIban,
+      wide: true,
+    },
   ].filter(Boolean) as { label: string; value: string; wide?: boolean }[]
 
   return (

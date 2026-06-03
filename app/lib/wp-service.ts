@@ -13,11 +13,11 @@
  * `cleanWpBody`. Imported with an explicit `.ts` path so the seed can run it under
  * `node --experimental-strip-types` (no path-alias resolver there).
  */
-import { cleanWpBody } from './wp-body.ts'
-import { decodeInline, excerptText, firstParagraph } from './wp-text.ts'
-
 import type { PortableTextBlock } from './wp-body.ts'
 import type { WpPage } from './wp-text.ts'
+
+import { cleanWpBody } from './wp-body.ts'
+import { decodeInline, excerptText, firstParagraph } from './wp-text.ts'
 
 export type { WpPage }
 

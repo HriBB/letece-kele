@@ -35,7 +35,11 @@ export function serviceChecklist(
     .map((b) =>
       Array.isArray(b.children)
         ? b.children
-            .map((c) => (typeof (c as { text?: unknown }).text === 'string' ? (c as { text: string }).text : ''))
+            .map((c) =>
+              typeof (c as { text?: unknown }).text === 'string'
+                ? (c as { text: string }).text
+                : '',
+            )
             .join('')
             .trim()
         : '',

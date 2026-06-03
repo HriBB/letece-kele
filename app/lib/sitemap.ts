@@ -40,8 +40,14 @@ export function buildSitemapXml({
 }): string {
   const urls: SitemapUrl[] = [
     ...STATIC_PATHS.map((p) => ({ loc: `${origin}${p}` })),
-    ...services.map((s) => ({ loc: `${origin}${serviceHref(s.slug)}`, lastmod: s.updatedAt })),
-    ...projects.map((p) => ({ loc: `${origin}${projectHref(p.slug)}`, lastmod: p.updatedAt })),
+    ...services.map((s) => ({
+      loc: `${origin}${serviceHref(s.slug)}`,
+      lastmod: s.updatedAt,
+    })),
+    ...projects.map((p) => ({
+      loc: `${origin}${projectHref(p.slug)}`,
+      lastmod: p.updatedAt,
+    })),
   ]
 
   return `<?xml version="1.0" encoding="UTF-8"?>

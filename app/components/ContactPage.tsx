@@ -22,14 +22,15 @@ export function ContactPage({ settings }: { settings: SiteSettings | null }) {
   return (
     <article className="container-page py-16 sm:py-24">
       <header className="max-w-3xl">
-        <span className="inline-flex items-center gap-2 rounded-full bg-orange/12 px-4 py-2 text-xs font-bold uppercase tracking-widest text-orange">
+        <span className="bg-orange/12 text-orange inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold tracking-widest uppercase">
           Kontakt
         </span>
-        <h1 className="mt-6 text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
+        <h1 className="text-ink mt-6 text-4xl leading-tight font-extrabold sm:text-5xl">
           Pokličite ali pišite
         </h1>
-        <p className="mt-5 text-lg leading-relaxed text-ink-soft">
-          Za ponudbo ali vprašanje nas pokličite oziroma nam pišite — svetujemo brezplačno.
+        <p className="text-ink-soft mt-5 text-lg leading-relaxed">
+          Za ponudbo ali vprašanje nas pokličite oziroma nam pišite — svetujemo
+          brezplačno.
         </p>
       </header>
 
@@ -38,16 +39,18 @@ export function ContactPage({ settings }: { settings: SiteSettings | null }) {
         {contact?.phone && contact?.phoneHref && (
           <a
             href={contact.phoneHref}
-            className="flex items-start gap-4 rounded-2xl bg-bone p-7 transition-colors hover:bg-bone-2"
+            className="bg-bone hover:bg-bone-2 flex items-start gap-4 rounded-2xl p-7 transition-colors"
           >
-            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-orange text-paper">
+            <span className="bg-orange text-paper grid size-11 shrink-0 place-items-center rounded-full">
               <Phone size={18} />
             </span>
             <span>
-              <span className="block text-xs font-bold uppercase tracking-widest text-ink/50">
+              <span className="text-ink/50 block text-xs font-bold tracking-widest uppercase">
                 Telefon
               </span>
-              <span className="mt-1 block text-xl font-bold text-ink">{contact.phone}</span>
+              <span className="text-ink mt-1 block text-xl font-bold">
+                {contact.phone}
+              </span>
             </span>
           </a>
         )}
@@ -56,16 +59,18 @@ export function ContactPage({ settings }: { settings: SiteSettings | null }) {
         {contact?.email && (
           <a
             href={`mailto:${contact.email}`}
-            className="flex items-start gap-4 rounded-2xl bg-bone p-7 transition-colors hover:bg-bone-2"
+            className="bg-bone hover:bg-bone-2 flex items-start gap-4 rounded-2xl p-7 transition-colors"
           >
-            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-orange text-paper">
+            <span className="bg-orange text-paper grid size-11 shrink-0 place-items-center rounded-full">
               <Mail size={18} />
             </span>
             <span>
-              <span className="block text-xs font-bold uppercase tracking-widest text-ink/50">
+              <span className="text-ink/50 block text-xs font-bold tracking-widest uppercase">
                 E-pošta
               </span>
-              <span className="mt-1 block text-xl font-bold text-ink">{contact.email}</span>
+              <span className="text-ink mt-1 block text-xl font-bold">
+                {contact.email}
+              </span>
             </span>
           </a>
         )}
@@ -73,20 +78,22 @@ export function ContactPage({ settings }: { settings: SiteSettings | null }) {
 
       {/* Address + static location reference (external map link, no interactive map). */}
       {contact?.address && (
-        <section className="mt-6 rounded-2xl bg-bone p-7 lg:mt-8">
+        <section className="bg-bone mt-6 rounded-2xl p-7 lg:mt-8">
           <div className="flex items-start gap-4">
-            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-orange text-paper">
+            <span className="bg-orange text-paper grid size-11 shrink-0 place-items-center rounded-full">
               <MapPin size={18} />
             </span>
             <div>
-              <span className="block text-xs font-bold uppercase tracking-widest text-ink/50">
+              <span className="text-ink/50 block text-xs font-bold tracking-widest uppercase">
                 Naslov
               </span>
-              <span className="mt-1 block text-xl font-bold text-ink">{contact.address}</span>
+              <span className="text-ink mt-1 block text-xl font-bold">
+                {contact.address}
+              </span>
               {map && (
                 <SmartLink
                   href={map}
-                  className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-orange hover:text-orange-dark"
+                  className="text-orange hover:text-orange-dark mt-3 inline-flex items-center gap-1.5 text-sm font-bold"
                 >
                   <MapPin size={14} />
                   Poglej na zemljevidu
@@ -99,8 +106,8 @@ export function ContactPage({ settings }: { settings: SiteSettings | null }) {
 
       {/* Legal / company data — *osnovni podatki* (CONTEXT.md). */}
       {legal && (
-        <section className="mt-12 rounded-2xl border border-ink/8 p-7 sm:p-9">
-          <h2 className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-ink/50">
+        <section className="border-ink/8 mt-12 rounded-2xl border p-7 sm:p-9">
+          <h2 className="text-ink/50 flex items-center gap-2 text-sm font-bold tracking-widest uppercase">
             <Building2 size={16} className="text-orange" />
             Osnovni podatki
           </h2>

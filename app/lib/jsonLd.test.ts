@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import { localBusinessJsonLd } from './jsonLd'
-
 import type { SiteSettings } from './types'
+
+import { localBusinessJsonLd } from './jsonLd'
 
 const settings: SiteSettings = {
   title: 'Leteče Kele',
@@ -30,7 +30,10 @@ describe('localBusinessJsonLd', () => {
       url: 'https://letecekele.si',
       telephone: '+386 40 123 456',
       email: 'info@letecekele.si',
-      address: { '@type': 'PostalAddress', streetAddress: 'Bašelj 37a, 4205 Preddvor' },
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'Bašelj 37a, 4205 Preddvor',
+      },
       vatID: 'SI12345678',
       hasMap: 'https://maps.google.com/?q=Baselj+37a',
     })

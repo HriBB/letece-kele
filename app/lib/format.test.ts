@@ -4,7 +4,9 @@ import { projectMeta } from './format'
 
 describe('projectMeta', () => {
   it('joins location and year with a middot', () => {
-    expect(projectMeta({ location: 'Ljubljana', year: 2013 })).toBe('Ljubljana · 2013')
+    expect(projectMeta({ location: 'Ljubljana', year: 2013 })).toBe(
+      'Ljubljana · 2013',
+    )
   })
 
   it('omits a missing field without leaving a dangling separator', () => {

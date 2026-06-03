@@ -27,7 +27,7 @@ export function ListingCard({
   return (
     <SmartLink
       href={href}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-paper transition-shadow hover:shadow-lg"
+      className="group border-line bg-paper flex flex-col overflow-hidden rounded-2xl border transition-shadow hover:shadow-lg"
     >
       <div className="aspect-[4/3] overflow-hidden">
         <Image
@@ -39,10 +39,12 @@ export function ListingCard({
         />
       </div>
       <div className="flex flex-1 flex-col p-6">
-        <h2 className="text-xl font-bold text-ink">{title}</h2>
-        {meta ? <p className="mt-2 font-bold text-orange">{meta}</p> : null}
-        {summary ? <p className="mt-3 text-ink-soft">{summary}</p> : null}
-        <span className="mt-6 inline-flex font-bold text-orange">Preberi več →</span>
+        <h2 className="text-ink text-xl font-bold">{title}</h2>
+        {meta ? <p className="text-orange mt-2 font-bold">{meta}</p> : null}
+        {summary ? <p className="text-ink-soft mt-3">{summary}</p> : null}
+        <span className="text-orange mt-6 inline-flex font-bold">
+          Preberi več →
+        </span>
       </div>
     </SmartLink>
   )

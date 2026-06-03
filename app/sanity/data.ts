@@ -11,10 +11,7 @@ import type { QueryResponseInitial } from '@sanity/react-loader'
  * `params` cannot drift between server (`loadSanity`) and client (`useSanity`): the
  * hydration-matching invariant `@sanity/react-loader` needs is enforced by construction.
  */
-export type SanityQuery<
-  Result,
-  Params extends QueryParams = QueryParams,
-> = {
+export type SanityQuery<Result, Params extends QueryParams = QueryParams> = {
   readonly query: string
   /** phantom — carries Result/Params at the type level only, never read at runtime */
   readonly __types?: (params: Params) => Result
@@ -27,10 +24,7 @@ export function defineSanityQuery<Result, Params extends QueryParams = QueryPara
 }
 
 /** What `loadSanity` returns and `useSanity` consumes — the cross-seam wire shape. */
-export type SanityLoaderData<
-  Result,
-  Params extends QueryParams = QueryParams,
-> = {
+export type SanityLoaderData<Result, Params extends QueryParams = QueryParams> = {
   initial: QueryResponseInitial<Result>
   params: Params
 }

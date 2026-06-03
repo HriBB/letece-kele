@@ -1,6 +1,6 @@
-import { serviceHref } from '~/lib/link'
-
 import type { SiteSettings } from '~/lib/types'
+
+import { serviceHref } from '~/lib/link'
 
 /** The minimal service shape the LocalBusiness offer catalog needs. */
 export type ServiceRef = { title: string; slug: string }

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import { wpPagesToAbout } from './wp-about'
-
 import type { PortableTextBlock } from './wp-body'
+
+import { wpPagesToAbout } from './wp-about'
 
 /** Flatten body blocks back to plain text — to assert the prose is kept verbatim. */
 const text = (blocks: PortableTextBlock[]) =>
@@ -66,7 +66,9 @@ describe('wpPagesToAbout', () => {
   })
 
   it('derives the intro from the first page excerpt, dropping the read-more tail', () => {
-    expect(wpPagesToAbout(pages).intro).toBe('Smo ekipa alpinistov za višinska dela.')
+    expect(wpPagesToAbout(pages).intro).toBe(
+      'Smo ekipa alpinistov za višinska dela.',
+    )
   })
 
   it('merges every page into one coherent body, Slovenian prose verbatim, 2012 junk dropped', () => {
@@ -102,7 +104,11 @@ describe('wpPagesToAbout', () => {
     const sectionHeadings = body
       .filter((b) => b.style === 'h2')
       .map((b) => b.children.map((c) => c.text).join(''))
-    expect(sectionHeadings).toEqual(['Vizija', 'Kvaliteta', 'Zakaj delamo na višini'])
+    expect(sectionHeadings).toEqual([
+      'Vizija',
+      'Kvaliteta',
+      'Zakaj delamo na višini',
+    ])
   })
 
   it('folds in the alpinist credibility story as a section', () => {

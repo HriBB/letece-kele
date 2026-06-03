@@ -1,6 +1,7 @@
 import type { ProjectData } from '~/lib/types'
 
 import { projectMeta } from '~/lib/format'
+
 import { ContactCta } from '~/components/ContactCta'
 import { Gallery } from '~/components/Gallery'
 import { PortableText } from '~/components/PortableText'
@@ -34,14 +35,12 @@ export function ProjectPage({
   return (
     <article className="container-page py-16 sm:py-24">
       <header className="max-w-3xl">
-        <h1 className="text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
+        <h1 className="text-ink text-4xl leading-tight font-extrabold sm:text-5xl">
           {title}
         </h1>
-        {meta ? (
-          <p className="mt-4 font-bold text-orange">{meta}</p>
-        ) : null}
+        {meta ? <p className="text-orange mt-4 font-bold">{meta}</p> : null}
         {summary ? (
-          <p className="mt-5 text-lg leading-relaxed text-ink-soft">{summary}</p>
+          <p className="text-ink-soft mt-5 text-lg leading-relaxed">{summary}</p>
         ) : null}
       </header>
 
@@ -53,7 +52,7 @@ export function ProjectPage({
 
       {hasBody ? (
         <section className="mt-12">
-          <PortableText value={body} className="mt-5 max-w-3xl text-ink-soft" />
+          <PortableText value={body} className="text-ink-soft mt-5 max-w-3xl" />
         </section>
       ) : null}
 

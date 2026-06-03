@@ -20,11 +20,17 @@ describe('selectFeaturedProjects', () => {
       { _id: 'b', featured: false },
       { _id: 'c', featured: false },
     ]
-    expect(selectFeaturedProjects(projects, 2).map((p) => p._id)).toEqual(['a', 'b'])
+    expect(selectFeaturedProjects(projects, 2).map((p) => p._id)).toEqual([
+      'a',
+      'b',
+    ])
   })
 
   it('caps the result at the limit', () => {
-    const projects = Array.from({ length: 9 }, (_, i) => ({ _id: `${i}`, featured: true }))
+    const projects = Array.from({ length: 9 }, (_, i) => ({
+      _id: `${i}`,
+      featured: true,
+    }))
     expect(selectFeaturedProjects(projects, 6)).toHaveLength(6)
   })
 
@@ -40,7 +46,9 @@ const steps: PortableTextBlock[] = [
   {
     _type: 'block',
     style: 'normal',
-    children: [{ _type: 'span', text: 'Mehanska odstranitev slabo sprijetega betona' }],
+    children: [
+      { _type: 'span', text: 'Mehanska odstranitev slabo sprijetega betona' },
+    ],
   },
   {
     _type: 'block',
@@ -50,7 +58,9 @@ const steps: PortableTextBlock[] = [
   {
     _type: 'block',
     style: 'normal',
-    children: [{ _type: 'span', text: 'Zaščita armature z antikorozijskim premazom' }],
+    children: [
+      { _type: 'span', text: 'Zaščita armature z antikorozijskim premazom' },
+    ],
   },
   {
     _type: 'block',

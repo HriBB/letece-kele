@@ -1,8 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
-import { buildFixedImageProps, buildImageProps, DEFAULT_WIDTHS, lqipOf } from './image'
-
 import type { SanityImage } from './image'
+
+import {
+  buildFixedImageProps,
+  buildImageProps,
+  DEFAULT_WIDTHS,
+  lqipOf,
+} from './image'
 
 // A realistic Sanity image asset _ref: `image-<40-hex sha1>-<w>x<h>-<ext>`.
 // `getImageDimensions` reads the natural size straight from this string, so the
@@ -34,7 +39,10 @@ describe('buildImageProps', () => {
   })
 
   it('honours a custom width ladder', () => {
-    const props = buildImageProps(img(1600, 1200), { sizes: '100vw', widths: [320, 640] })
+    const props = buildImageProps(img(1600, 1200), {
+      sizes: '100vw',
+      widths: [320, 640],
+    })
     expect(props!.srcSet.split(', ')).toHaveLength(2)
     expect(props!.srcSet).toContain('320w')
     expect(props!.srcSet).toContain('640w')
@@ -49,7 +57,10 @@ describe('buildImageProps', () => {
 
   it('crops to a passed aspectRatio (ignoring the natural ratio) and reflects it in width/height', () => {
     // Natural is 4:3, but we ask for 16:9. width pins to baseWidth, height derives.
-    const props = buildImageProps(img(1600, 1200), { sizes: '100vw', aspectRatio: 16 / 9 })
+    const props = buildImageProps(img(1600, 1200), {
+      sizes: '100vw',
+      aspectRatio: 16 / 9,
+    })
     expect(props!.width).toBe(800)
     expect(props!.height).toBe(Math.round(800 / (16 / 9))) // 450
     // a fixed ratio forces a server-side crop
@@ -65,11 +76,16 @@ describe('buildImageProps', () => {
 describe('buildFixedImageProps', () => {
   it('returns null when the asset is missing', () => {
     expect(buildFixedImageProps(null, { displayHeight: 40 })).toBeNull()
-    expect(buildFixedImageProps({ asset: undefined }, { displayHeight: 40 })).toBeNull()
+    expect(
+      buildFixedImageProps({ asset: undefined }, { displayHeight: 40 }),
+    ).toBeNull()
   })
 
   it('pins width + height and emits a DPR srcSet (1x base, 2x retina)', () => {
-    const props = buildFixedImageProps(img(498, 214), { displayWidth: 120, displayHeight: 40 })
+    const props = buildFixedImageProps(img(498, 214), {
+      displayWidth: 120,
+      displayHeight: 40,
+    })
 
     expect(props!.width).toBe(120)
     expect(props!.height).toBe(40)

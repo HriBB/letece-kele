@@ -8,7 +8,13 @@ import { Image } from '~/components/Image'
  * library and no animation — scrolling is the browser's, navigation is native
  * (drag, trackpad, arrow keys on focus). A single photo renders as a plain figure.
  */
-export function Gallery({ images, title }: { images: SanityImage[]; title: string }) {
+export function Gallery({
+  images,
+  title,
+}: {
+  images: SanityImage[]
+  title: string
+}) {
   const photos = (images ?? []).filter(Boolean)
   if (photos.length === 0) return null
 
@@ -26,7 +32,7 @@ export function Gallery({ images, title }: { images: SanityImage[]; title: strin
           />
         </div>
         {only.alt ? (
-          <figcaption className="mt-2 text-sm text-ink-soft">{only.alt}</figcaption>
+          <figcaption className="text-ink-soft mt-2 text-sm">{only.alt}</figcaption>
         ) : null}
       </figure>
     )
@@ -50,7 +56,9 @@ export function Gallery({ images, title }: { images: SanityImage[]; title: strin
               />
             </div>
             {photo.alt ? (
-              <figcaption className="mt-2 text-sm text-ink-soft">{photo.alt}</figcaption>
+              <figcaption className="text-ink-soft mt-2 text-sm">
+                {photo.alt}
+              </figcaption>
             ) : null}
           </figure>
         </li>

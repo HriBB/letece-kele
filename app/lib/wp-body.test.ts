@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import { cleanWpBody } from './wp-body'
-
 import type { PortableTextBlock } from './wp-body'
+
+import { cleanWpBody } from './wp-body'
 
 /** Flatten a block's spans back to plain text — for asserting prose is verbatim. */
 const text = (blocks: PortableTextBlock[]) =>
@@ -17,7 +17,9 @@ describe('cleanWpBody — strips 2012 formatting junk', () => {
 
     const { portableText } = cleanWpBody(html)
 
-    expect(text(portableText)).toBe('Sanacija betonske fasade na zahtevni lokaciji.')
+    expect(text(portableText)).toBe(
+      'Sanacija betonske fasade na zahtevni lokaciji.',
+    )
     // no CSS leaked into the prose
     expect(JSON.stringify(portableText)).not.toContain('margin')
     expect(JSON.stringify(portableText)).not.toContain('color: red')
@@ -51,7 +53,10 @@ describe('cleanWpBody — lifts embedded images into the gallery', () => {
     const { portableText, gallery } = cleanWpBody(html)
 
     expect(gallery).toEqual([
-      { src: 'https://letecekele.si/wp-content/uploads/2013/06/jez1.jpg', alt: 'Jez Sveta Petka' },
+      {
+        src: 'https://letecekele.si/wp-content/uploads/2013/06/jez1.jpg',
+        alt: 'Jez Sveta Petka',
+      },
       { src: 'https://letecekele.si/wp-content/uploads/2013/06/jez2.jpg', alt: '' },
     ])
     // prose survives, but no image markup leaks into it
@@ -81,7 +86,14 @@ describe('cleanWpBody — converts prose to Portable Text, Slovenian verbatim', 
         _key: 'b0',
         style: 'h2',
         markDefs: [],
-        children: [{ _type: 'span', _key: 's0', text: 'Sanacija betonske fasade', marks: [] }],
+        children: [
+          {
+            _type: 'span',
+            _key: 's0',
+            text: 'Sanacija betonske fasade',
+            marks: [],
+          },
+        ],
       },
       {
         _type: 'block',
@@ -120,7 +132,9 @@ describe('cleanWpBody — converts prose to Portable Text, Slovenian verbatim', 
 
     const { portableText } = cleanWpBody(html)
 
-    expect(portableText[0].children[0].text).toBe('Projekt Preglov trg 10 — beton & fasada, 140 enot.')
+    expect(portableText[0].children[0].text).toBe(
+      'Projekt Preglov trg 10 — beton & fasada, 140 enot.',
+    )
     // no inline markup leaked
     expect(portableText[0].children[0].text).not.toContain('<strong>')
   })
@@ -142,7 +156,10 @@ describe('cleanWpBody — converts prose to Portable Text, Slovenian verbatim', 
     )
     expect(portableText[0].style).toBe('h2')
     expect(gallery).toEqual([
-      { src: 'https://letecekele.si/wp-content/uploads/2013/06/jez.jpg', alt: 'Jez' },
+      {
+        src: 'https://letecekele.si/wp-content/uploads/2013/06/jez.jpg',
+        alt: 'Jez',
+      },
     ])
   })
 

@@ -6,9 +6,9 @@
  * mapper. Imported with an explicit `.ts` path so the seed can run them under
  * `node --experimental-strip-types`.
  */
-import { cleanWpBody } from './wp-body.ts'
-
 import type { PortableTextBlock } from './wp-body.ts'
+
+import { cleanWpBody } from './wp-body.ts'
 
 /** The slice of the WordPress REST page/post shape the mappers read. */
 export type WpPage = {

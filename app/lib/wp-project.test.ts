@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import { wpPostToProject } from './wp-project'
-
 import type { PortableTextBlock } from './wp-body'
+
+import { wpPostToProject } from './wp-project'
 
 /** Flatten body blocks back to plain text — to assert the prose is kept verbatim. */
 const text = (blocks: PortableTextBlock[]) =>
@@ -115,7 +115,10 @@ describe('wpPostToProject', () => {
         src: 'https://letecekele.si/wp-content/uploads/2012/09/ucakar1.jpg',
         alt: 'Ulica bratov Učakar',
       },
-      { src: 'https://letecekele.si/wp-content/uploads/2012/09/ucakar2.jpg', alt: '' },
+      {
+        src: 'https://letecekele.si/wp-content/uploads/2012/09/ucakar2.jpg',
+        alt: '',
+      },
     ])
   })
 })

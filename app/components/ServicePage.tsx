@@ -29,11 +29,13 @@ export function ServicePage({
   return (
     <article className="container-page py-16 sm:py-24">
       <header className="max-w-3xl">
-        <h1 className="text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
+        <h1 className="text-ink text-4xl leading-tight font-extrabold sm:text-5xl">
           {title}
         </h1>
         {description ? (
-          <p className="mt-5 text-lg leading-relaxed text-ink-soft">{description}</p>
+          <p className="text-ink-soft mt-5 text-lg leading-relaxed">
+            {description}
+          </p>
         ) : null}
       </header>
 
@@ -52,8 +54,8 @@ export function ServicePage({
 
       {steps && steps.length > 0 ? (
         <section className="mt-12">
-          <h2 className="text-2xl font-bold text-ink">Postopek</h2>
-          <PortableText value={steps} className="mt-5 max-w-3xl text-ink-soft" />
+          <h2 className="text-ink text-2xl font-bold">Postopek</h2>
+          <PortableText value={steps} className="text-ink-soft mt-5 max-w-3xl" />
         </section>
       ) : null}
 

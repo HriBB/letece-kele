@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { loadSanity } from './data.server'
 import { defineSanityQuery } from './data'
+import { loadSanity } from './data.server'
 
 // Cut the mock at the collaborator boundary: loadSanity's own logic (param
 // default, notFoundIfEmpty 404, withPreview toggle, option forwarding) is the
@@ -10,13 +10,17 @@ import { defineSanityQuery } from './data'
 const loadQuery = vi.fn()
 const loadQueryOptions = vi.fn()
 
-vi.mock('~/sanity/loader.server', () => ({ loadQuery: (...a: unknown[]) => loadQuery(...a) }))
+vi.mock('~/sanity/loader.server', () => ({
+  loadQuery: (...a: unknown[]) => loadQuery(...a),
+}))
 vi.mock('~/sanity/loadQueryOptions.server', () => ({
   loadQueryOptions: (...a: unknown[]) => loadQueryOptions(...a),
 }))
 
 const req = () => new Request('https://letecekele.si/')
-const descriptor = defineSanityQuery<{ title: string }, { slug: string }>('*[_type=="x"][0]')
+const descriptor = defineSanityQuery<{ title: string }, { slug: string }>(
+  '*[_type=="x"][0]',
+)
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -32,10 +36,17 @@ describe('loadSanity', () => {
 
     const result = await loadSanity(req(), descriptor, { params: { slug: 'a' } })
 
-    expect(loadQuery).toHaveBeenCalledWith(descriptor.query, { slug: 'a' }, {
-      perspective: 'published',
+    expect(loadQuery).toHaveBeenCalledWith(
+      descriptor.query,
+      { slug: 'a' },
+      {
+        perspective: 'published',
+      },
+    )
+    expect(result).toEqual({
+      initial: { data: { title: 'Hi' } },
+      params: { slug: 'a' },
     })
-    expect(result).toEqual({ initial: { data: { title: 'Hi' } }, params: { slug: 'a' } })
   })
 
   it('defaults params to {} when none are given', async () => {
@@ -65,7 +76,10 @@ describe('loadSanity', () => {
 
   it('includes the preview flag only when withPreview is set', async () => {
     loadQuery.mockResolvedValue({ data: { title: 'Hi' } })
-    loadQueryOptions.mockResolvedValue({ preview: true, options: { perspective: 'drafts' } })
+    loadQueryOptions.mockResolvedValue({
+      preview: true,
+      options: { perspective: 'drafts' },
+    })
 
     const withFlag = await loadSanity(req(), descriptor, { withPreview: true })
     expect(withFlag).toMatchObject({ preview: true })

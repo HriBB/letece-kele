@@ -11,7 +11,7 @@ export function ExitPreview() {
     >
       <button
         type="submit"
-        className="rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-paper shadow-lg hover:bg-ink/90"
+        className="bg-ink text-paper hover:bg-ink/90 rounded-full px-5 py-2.5 text-sm font-bold shadow-lg"
       >
         Zapri predogled
       </button>

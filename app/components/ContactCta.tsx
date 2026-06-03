@@ -22,21 +22,21 @@ export function ContactCta({
   quoteLabel: string
 }) {
   return (
-    <section className="mt-16 rounded-2xl bg-bone p-8 text-center sm:p-12">
-      <h2 className="text-2xl font-bold text-ink">{heading}</h2>
-      <p className="mt-3 text-ink-soft">{text}</p>
+    <section className="bg-bone mt-16 rounded-2xl p-8 text-center sm:p-12">
+      <h2 className="text-ink text-2xl font-bold">{heading}</h2>
+      <p className="text-ink-soft mt-3">{text}</p>
       <div className="mt-7 flex flex-wrap justify-center gap-4">
         {phoneHref ? (
           <a
             href={phoneHref}
-            className="inline-flex items-center justify-center rounded-full bg-orange px-6 py-3 font-bold text-white transition-colors hover:bg-orange-dark"
+            className="bg-orange hover:bg-orange-dark inline-flex items-center justify-center rounded-full px-6 py-3 font-bold text-white transition-colors"
           >
             {phone ? `Pokličite ${phone}` : 'Pokličite nas'}
           </a>
         ) : null}
         <SmartLink
           href={quoteHref}
-          className="inline-flex items-center justify-center rounded-full border-2 border-ink px-6 py-3 font-bold text-ink transition-colors hover:bg-ink hover:text-white"
+          className="border-ink text-ink hover:bg-ink inline-flex items-center justify-center rounded-full border-2 px-6 py-3 font-bold transition-colors hover:text-white"
         >
           {quoteLabel}
         </SmartLink>

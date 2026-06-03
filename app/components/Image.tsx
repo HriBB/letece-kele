@@ -1,6 +1,6 @@
-import { buildImageProps, lqipOf } from '~/lib/image'
-
 import type { ImageInput } from '~/lib/image'
+
+import { buildImageProps, lqipOf } from '~/lib/image'
 
 type ImageProps = {
   image: ImageInput

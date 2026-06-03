@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import { wpPageToService } from './wp-service'
-
 import type { PortableTextBlock } from './wp-body'
+
+import { wpPageToService } from './wp-service'
 
 /** Flatten step blocks back to plain text — to assert the prose is kept verbatim. */
 const text = (blocks: PortableTextBlock[]) =>

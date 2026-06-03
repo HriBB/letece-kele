@@ -3,20 +3,21 @@ import { PortableText as BasePortableText } from '@portabletext/react'
 import type { PortableTextComponents } from '@portabletext/react'
 import type { PortableTextBlock } from '@portabletext/types'
 
-import { SmartLink } from '~/components/SmartLink'
 import { cn } from '~/lib/utils'
+
+import { SmartLink } from '~/components/SmartLink'
 
 const components: PortableTextComponents = {
   block: {
     normal: ({ children }) => <p>{children}</p>,
     h2: ({ children }) => (
-      <h2 className="text-xl font-bold text-ink">{children}</h2>
+      <h2 className="text-ink text-xl font-bold">{children}</h2>
     ),
     h3: ({ children }) => (
-      <h3 className="text-lg font-bold text-ink">{children}</h3>
+      <h3 className="text-ink text-lg font-bold">{children}</h3>
     ),
     blockquote: ({ children }) => (
-      <blockquote className="border-l-2 border-orange pl-4 italic">
+      <blockquote className="border-orange border-l-2 pl-4 italic">
         {children}
       </blockquote>
     ),

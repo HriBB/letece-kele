@@ -16,11 +16,11 @@ export function AboutPage({ data }: { data: AboutPageData }) {
   return (
     <article className="container-page py-16 sm:py-24">
       <header className="max-w-3xl">
-        <h1 className="text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
+        <h1 className="text-ink text-4xl leading-tight font-extrabold sm:text-5xl">
           {title}
         </h1>
         {intro ? (
-          <p className="mt-5 text-lg leading-relaxed text-ink-soft">{intro}</p>
+          <p className="text-ink-soft mt-5 text-lg leading-relaxed">{intro}</p>
         ) : null}
       </header>
 
@@ -38,7 +38,7 @@ export function AboutPage({ data }: { data: AboutPageData }) {
       ) : null}
 
       {body && body.length > 0 ? (
-        <PortableText value={body} className="mt-12 max-w-3xl text-ink-soft" />
+        <PortableText value={body} className="text-ink-soft mt-12 max-w-3xl" />
       ) : null}
     </article>
   )

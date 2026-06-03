@@ -1,7 +1,7 @@
 import { useLiveMode } from '@sanity/react-loader'
 
-import { STUDIO_BASEPATH } from '~/sanity/constants'
 import { client } from '~/sanity/client'
+import { STUDIO_BASEPATH } from '~/sanity/constants'
 
 // Browser client (tokenless) with stega for Visual Editing overlays. Mounted only
 // while preview is active (see website/layout.tsx) — subscribes useSanity queries

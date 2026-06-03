@@ -3,7 +3,6 @@
 // the site-wide settings consumed by the shared layout (Header / Footer / contact).
 
 import type { PortableTextBlock } from '@portabletext/types'
-
 import type { SanityImage } from '~/lib/image'
 
 export type NavLink = { label: string; href: string }

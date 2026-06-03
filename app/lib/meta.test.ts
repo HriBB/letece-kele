@@ -4,9 +4,7 @@ import { pageMeta } from './meta'
 
 describe('pageMeta', () => {
   it('expands title + description into the full tag set, defaulting og:* sensibly', () => {
-    expect(
-      pageMeta({ title: 'Storitve', description: 'Vse storitve.' }),
-    ).toEqual([
+    expect(pageMeta({ title: 'Storitve', description: 'Vse storitve.' })).toEqual([
       { title: 'Storitve' },
       { name: 'description', content: 'Vse storitve.' },
       { property: 'og:title', content: 'Storitve' }, // og:title defaults to title
@@ -22,7 +20,10 @@ describe('pageMeta', () => {
       ogTitle: 'Sanacija betona',
       ogType: 'article',
     })
-    expect(tags).toContainEqual({ property: 'og:title', content: 'Sanacija betona' })
+    expect(tags).toContainEqual({
+      property: 'og:title',
+      content: 'Sanacija betona',
+    })
     expect(tags).toContainEqual({ property: 'og:type', content: 'article' })
     // document <title> stays the full title; only the share title shortens.
     expect(tags).toContainEqual({ title: 'Sanacija betona — Leteče Kele' })

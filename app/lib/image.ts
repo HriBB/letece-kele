@@ -151,11 +151,19 @@ export function buildFixedImageProps(
   const ref = resolveRef(image)
   if (!ref || !image) return null
 
-  const { displayWidth, displayHeight, fit = 'max', quality = 80, dpr = [1, 2] } = opts
+  const {
+    displayWidth,
+    displayHeight,
+    fit = 'max',
+    quality = 80,
+    dpr = [1, 2],
+  } = opts
   const source = image as SanityImageSource
 
   const url = (scale: number) => {
-    let builder = imageUrlBuilder.image(source).height(Math.round(displayHeight * scale))
+    let builder = imageUrlBuilder
+      .image(source)
+      .height(Math.round(displayHeight * scale))
     if (displayWidth) builder = builder.width(Math.round(displayWidth * scale))
     return builder.fit(fit).auto('format').quality(quality).url()
   }

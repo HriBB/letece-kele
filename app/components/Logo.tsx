@@ -49,7 +49,7 @@ export function Logo({
       {img}
       <span
         className={cn(
-          'mt-1 text-[0.62rem] font-semibold uppercase tracking-[0.22em] opacity-70',
+          'mt-1 text-[0.62rem] font-semibold tracking-[0.22em] uppercase opacity-70',
           subClassName,
         )}
       >

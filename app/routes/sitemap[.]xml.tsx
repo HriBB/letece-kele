@@ -1,14 +1,16 @@
+import type { SitemapEntry } from '~/lib/sitemap'
 import type { Route } from './+types/sitemap[.]xml'
 
+import { buildSitemapXml } from '~/lib/sitemap'
 import { serverClient } from '~/sanity/client.server'
 import { PROJECT_SLUGS_QUERY, SERVICE_SLUGS_QUERY } from '~/sanity/queries'
-import { buildSitemapXml } from '~/lib/sitemap'
-
-import type { SitemapEntry } from '~/lib/sitemap'
 
 type SlugRow = { slug: string; _updatedAt: string }
 
-const toEntry = (r: SlugRow): SitemapEntry => ({ slug: r.slug, updatedAt: r._updatedAt })
+const toEntry = (r: SlugRow): SitemapEntry => ({
+  slug: r.slug,
+  updatedAt: r._updatedAt,
+})
 
 export async function loader({ request }: Route.LoaderArgs) {
   const origin = new URL(request.url).origin

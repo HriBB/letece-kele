@@ -23,10 +23,10 @@
  * `cleanWpBody`. Imported with an explicit `.ts` path so the seed can run it under
  * `node --experimental-strip-types` (no path-alias resolver there).
  */
+import type { GalleryImage, PortableTextBlock } from './wp-body.ts'
+
 import { cleanWpBody } from './wp-body.ts'
 import { decodeInline, excerptText, firstParagraph } from './wp-text.ts'
-
-import type { GalleryImage, PortableTextBlock } from './wp-body.ts'
 
 /** The slice of the WordPress REST post shape the mapper reads. */
 export type WpPost = {
@@ -57,7 +57,9 @@ export function wpPostToProject(post: WpPost, order: number): ProjectSeedDoc {
   const parsedYear = Number(post.date?.slice(0, 4))
   const year = Number.isFinite(parsedYear) ? parsedYear : undefined
 
-  const { portableText: body, gallery: galleryUrls } = cleanWpBody(post.content.rendered)
+  const { portableText: body, gallery: galleryUrls } = cleanWpBody(
+    post.content.rendered,
+  )
 
   // Short summary: prefer the excerpt, falling back to the first real paragraph.
   const summary = excerptText(post.excerpt?.rendered) || firstParagraph(body)

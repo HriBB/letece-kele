@@ -51,12 +51,16 @@ const ENTITIES: Record<string, string> = {
 }
 
 function decodeEntities(text: string): string {
-  return text
-    // numeric entities (decimal &#8212; and hex &#x2014;) → their codepoint
-    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
-    // common named entities
-    .replace(/&[a-zA-Z]+;/g, (m) => ENTITIES[m] ?? m)
+  return (
+    text
+      // numeric entities (decimal &#8212; and hex &#x2014;) → their codepoint
+      .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+      .replace(/&#x([0-9a-fA-F]+);/g, (_, h) =>
+        String.fromCodePoint(parseInt(h, 16)),
+      )
+      // common named entities
+      .replace(/&[a-zA-Z]+;/g, (m) => ENTITIES[m] ?? m)
+  )
 }
 
 /** Pull an attribute value (single- or double-quoted) out of a raw tag string. */
@@ -67,9 +71,7 @@ function attr(tag: string, name: string): string | undefined {
 
 /** Strip remaining inline tags, decode entities, collapse whitespace → clean prose. */
 function toText(inner: string): string {
-  const stripped = inner
-    .replace(/<br\s*\/?>/gi, ' ')
-    .replace(/<[^>]+>/g, '')
+  const stripped = inner.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '')
   return decodeEntities(stripped).replace(/\s+/g, ' ').trim()
 }
 
