@@ -5,6 +5,7 @@ import { Phone } from 'lucide-react'
 import type { SiteData } from '~/lib/types'
 
 import { cn } from '~/lib/utils'
+import { Image } from '~/components/Image'
 import { Logo } from '~/components/Logo'
 import { SmartLink } from '~/components/SmartLink'
 
@@ -13,6 +14,7 @@ export function Header({ site }: { site: SiteData }) {
   const location = useLocation()
   const nav = site.settings?.nav ?? []
   const cta = site.settings?.headerCta
+  const logo = site.settings?.logo
   const phoneHref = site.settings?.contact?.phoneHref
   const phone = site.settings?.contact?.phone
 
@@ -23,7 +25,17 @@ export function Header({ site }: { site: SiteData }) {
     <header className="sticky top-0 z-50 border-b border-ink/8 bg-paper/95 shadow-sm backdrop-blur-sm">
       <div className="container-page flex h-16 items-center justify-between gap-4">
         <SmartLink href="/" className="shrink-0" aria-label={site.settings?.title ?? 'Leteče Kele'}>
-          <Logo showSub className="h-9" />
+          {logo ? (
+            <Image
+              image={logo}
+              sizes="220px"
+              alt={site.settings?.title ?? 'Leteče Kele'}
+              priority
+              className="h-9 w-auto"
+            />
+          ) : (
+            <Logo showSub className="h-9" />
+          )}
         </SmartLink>
 
         <nav className="hidden items-center gap-6 lg:flex">

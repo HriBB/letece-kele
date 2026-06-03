@@ -17,6 +17,13 @@ export const siteSettingsType = defineType({
   fields: [
     defineField({ name: 'title', type: 'string', initialValue: 'Leteče Kele', group: 'header' }),
     defineField({
+      name: 'logo',
+      title: 'Logo',
+      type: 'figure',
+      group: 'header',
+      description: 'Brand wordmark shown in the header. Rendered responsively with an LQIP.',
+    }),
+    defineField({
       name: 'nav',
       title: 'Navigation',
       type: 'array',

@@ -1,10 +1,12 @@
 import type { SchemaTypeDefinition } from 'sanity'
 
+import { figureType } from './objects/figure'
 import { ctaLinkType, navLinkType } from './objects/shared'
 import { siteSettingsType } from './singletons/siteSettings'
 
 export const schemaTypes: SchemaTypeDefinition[] = [
   // Objects
+  figureType,
   ctaLinkType,
   navLinkType,
   // Singletons

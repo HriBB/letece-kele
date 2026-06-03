@@ -1,53 +1,78 @@
-import { imageDims } from '~/lib/site-data'
-import { cn } from '~/lib/utils'
+import { buildImageProps, lqipOf } from '~/lib/image'
 
-import lqip from '~/lib/lqip.json'
+import type { ImageInput } from '~/lib/image'
 
-const LQIP = lqip as Record<string, string>
-
-type Props = {
-  /** image basename, e.g. "preglov-trg-10" (file lives at /images/<name>.jpg) */
-  name: string
-  alt: string
+type ImageProps = {
+  image: ImageInput
+  sizes: string
+  /** Crop to a fixed ratio (width/height). Omit to preserve natural aspect. */
+  aspectRatio?: number
+  alt?: string
   className?: string
-  /** override the wrapper aspect-ratio (e.g. "16 / 9"); defaults to natural */
-  ratio?: string
-  /** eager-load above-the-fold (hero) images */
+  /** Above-the-fold images: eager load + high priority. */
   priority?: boolean
-  sizes?: string
+  widths?: readonly number[]
+  quality?: number
 }
 
 /**
- * Prototype image: blurred LQIP placeholder behind the real jpg, explicit
- * width/height + aspect-ratio so layout space is reserved (no CLS), lazy by
- * default. Real build swaps this for the Sanity image pipeline (ADR 0005).
+ * Responsive Sanity image (ADR 0005): explicit width/height to avoid CLS,
+ * srcSet + sizes for responsive delivery, and an LQIP blurred background that
+ * the full image paints over once decoded. Returns null when the asset is
+ * missing. Replaces the prototype static-jpg Image.
  */
-export function Image({ name, alt, className, ratio, priority, sizes }: Props) {
-  const dims = imageDims[name] ?? { w: 1280, h: 960 }
-  const placeholder = LQIP[name]
-  const aspect = ratio ?? `${dims.w} / ${dims.h}`
+export function Image({
+  image,
+  sizes,
+  aspectRatio,
+  alt,
+  className,
+  priority = false,
+  widths,
+  quality,
+}: ImageProps) {
+  const props = buildImageProps(image, { sizes, aspectRatio, widths, quality })
+  if (!props) return null
+
+  const lqip = lqipOf(image)
+  const fallbackAlt =
+    typeof image === 'object' && image && 'alt' in image
+      ? (image as { alt?: string }).alt
+      : undefined
+  const altText = alt ?? fallbackAlt ?? ''
 
   return (
-    <div
-      className={cn('relative overflow-hidden bg-bone-2', className)}
-      style={{
-        aspectRatio: aspect,
-        backgroundImage: placeholder ? `url(${placeholder})` : undefined,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
+    <>
+      {/* React 19 hoists this into <head>; preloads the LCP image early. */}
+      {priority && (
+        <link
+          rel="preload"
+          as="image"
+          href={props.src}
+          imageSrcSet={props.srcSet}
+          imageSizes={props.sizes}
+          fetchPriority="high"
+        />
+      )}
       <img
-        src={`/images/${name}.jpg`}
-        alt={alt}
-        width={dims.w}
-        height={dims.h}
-        sizes={sizes}
+        {...props}
+        alt={altText}
+        className={className}
         loading={priority ? 'eager' : 'lazy'}
         decoding={priority ? 'auto' : 'async'}
         fetchPriority={priority ? 'high' : undefined}
-        className="absolute inset-0 h-full w-full object-cover"
+        style={
+          lqip
+            ? {
+                backgroundImage: `url(${lqip})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }
+            : undefined
+        }
       />
-    </div>
+    </>
   )
 }
+
+export default Image

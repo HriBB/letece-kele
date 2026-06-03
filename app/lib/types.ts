@@ -2,6 +2,8 @@
 // its own types (service, project, homePage, aboutPage); this file currently holds
 // the site-wide settings consumed by the shared layout (Header / Footer / contact).
 
+import type { SanityImage } from '~/lib/image'
+
 export type NavLink = { label: string; href: string }
 export type CtaLink = { label: string; href: string } | null
 export type LinkItem = { label: string; href: string }
@@ -25,6 +27,7 @@ export type Contact = {
 
 export type SiteSettings = {
   title?: string
+  logo?: SanityImage | null
   nav?: NavLink[]
   headerCta?: CtaLink
   contact?: Contact
