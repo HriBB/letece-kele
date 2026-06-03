@@ -1,0 +1,20 @@
+# Self-host the RR7 SSR app (ADR 0006), mirroring slackalien/studio-website.
+#
+# `docker compose up` builds the image and serves the site on :3000. Only the
+# public VITE_ Sanity identifiers are passed as build args (baked into the
+# client bundle). Every secret + the server-side Sanity config comes at runtime
+# from the git-ignored .env via env_file — nothing secret is baked into the image.
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_SANITY_PROJECT_ID: ${VITE_SANITY_PROJECT_ID}
+        VITE_SANITY_DATASET: ${VITE_SANITY_DATASET}
+        VITE_SANITY_API_VERSION: ${VITE_SANITY_API_VERSION}
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    restart: unless-stopped
