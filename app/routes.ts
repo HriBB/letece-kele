@@ -21,4 +21,7 @@ export default [
   route('studio/*', './routes/studio.tsx'),
   // Resource routes (Visual Editing preview toggle).
   ...prefix('resource', [route('preview', './routes/resource/preview.ts')]),
+  // SEO surface (#9) — sitemap + robots served at the site root.
+  route('sitemap.xml', './routes/sitemap[.]xml.tsx'),
+  route('robots.txt', './routes/robots[.]txt.tsx'),
 ] satisfies RouteConfig

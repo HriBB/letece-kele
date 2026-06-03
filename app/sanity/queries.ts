@@ -23,6 +23,8 @@ export const FIGURE = /* groq */ `{
 }`
 
 // Site-wide settings (header nav, footer, contact, legal) wrapping every route.
+// `services` rides along (title + slug only) to feed the site-wide LocalBusiness
+// JSON-LD offer catalog (issue #9) — same `service` documents as /storitve.
 export const SITE_SETTINGS_QUERY = groq`{
   "settings": *[_type == "siteSettings"][0]{
     title,
@@ -32,6 +34,10 @@ export const SITE_SETTINGS_QUERY = groq`{
     contact,
     legal,
     footer
+  },
+  "services": *[_type == "service" && defined(slug.current)] | order(order asc, title asc){
+    title,
+    "slug": slug.current
   }
 }`
 
@@ -117,6 +123,18 @@ export const HOME_QUERY = groq`{
     "photo": gallery[0]${FIGURE},
     featured
   }
+}`
+
+// Slugs + last-modified for the sitemap (issue #9). Server-only resource route reads
+// (serverClient, not the descriptor seam) — the sitemap needs no client hydration.
+export const SERVICE_SLUGS_QUERY = groq`*[_type == "service" && defined(slug.current)]{
+  "slug": slug.current,
+  _updatedAt
+}`
+
+export const PROJECT_SLUGS_QUERY = groq`*[_type == "project" && defined(slug.current)]{
+  "slug": slug.current,
+  _updatedAt
 }`
 
 // The About page singleton for /o-podjetju — the merged company story.

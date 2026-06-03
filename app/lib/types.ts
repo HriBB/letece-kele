@@ -41,8 +41,13 @@ export type SiteSettings = {
   }
 }
 
+/** Minimal service reference (title + slug) the site-wide JSON-LD offer catalog needs. */
+export type SiteServiceRef = { title: string; slug: string }
+
 export type SiteData = {
   settings: SiteSettings | null
+  /** Service catalog (title + slug) for the LocalBusiness JSON-LD (issue #9). */
+  services: SiteServiceRef[]
 }
 
 /** A service (sl: storitev) as shown on the /storitve listing card. */
