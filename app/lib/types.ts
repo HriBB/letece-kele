@@ -52,6 +52,8 @@ export type ServiceListItem = {
   description?: string
   slug: string
   photo: SanityImage | null
+  /** Process steps — only queried for the home services teaser checklist (issue #8). */
+  steps?: PortableTextBlock[] | null
 }
 
 /** A single service for the /storitve/:slug detail page. */
@@ -74,6 +76,8 @@ export type ProjectListItem = {
   slug: string
   /** Lead photo: the first gallery image. */
   photo: SanityImage | null
+  /** Editor flag surfacing this project in the home featured strip (issue #8). */
+  featured?: boolean
 }
 
 /**
@@ -100,4 +104,57 @@ export type ProjectData = {
   slug: string
   gallery?: SanityImage[] | null
   body?: PortableTextBlock[] | null
+}
+
+// ── Home page (singleton at `/`) — the variant-5 "Warm craftsman" fold-in (issue #8).
+// The singleton carries the section copy; the services teaser and featured strip are
+// backed by the same `service` / `project` documents as /storitve and /reference.
+
+/** A value + label pair: a hero stat badge or a stats-strip entry. */
+export type Stat = { value?: string; label?: string }
+
+/** A why-us point: an icon row in the rounded panel. */
+export type Feature = { title?: string; body?: string }
+
+export type HomeHero = {
+  eyebrow?: string
+  heading?: string
+  lead?: string
+  /** Primary "Povprašajte po ponudbi" CTA. */
+  cta?: CtaLink
+  image: SanityImage | null
+  /** Floating stat badges over the hero image. */
+  badges?: Stat[]
+}
+
+export type HomeStory = {
+  eyebrow?: string
+  heading?: string
+  paragraphs?: PortableTextBlock[] | null
+  cta?: CtaLink
+}
+
+/** Section heading copy; the cards/slider below come from collection documents. */
+export type HomeSectionCopy = { eyebrow?: string; heading?: string; intro?: string }
+
+export type HomeWhyUs = HomeSectionCopy & { items?: Feature[] }
+
+export type HomeContactCopy = { eyebrow?: string; heading?: string; text?: string }
+
+/** The home singleton's authored copy (sections in render order). */
+export type HomePage = {
+  hero?: HomeHero
+  stats?: Stat[]
+  story?: HomeStory
+  servicesSection?: HomeSectionCopy
+  whyUs?: HomeWhyUs
+  featuredSection?: HomeSectionCopy
+  contact?: HomeContactCopy
+}
+
+/** What the home route loads: the singleton plus the documents its sections render. */
+export type HomeData = {
+  home: HomePage | null
+  services: ServiceListItem[]
+  projects: ProjectListItem[]
 }

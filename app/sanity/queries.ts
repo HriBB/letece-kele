@@ -2,6 +2,7 @@ import groq from 'groq'
 
 import type {
   AboutPageData,
+  HomeData,
   ProjectData,
   ProjectListItem,
   ServiceData,
@@ -78,6 +79,46 @@ export const PROJECT_BY_SLUG_QUERY = groq`*[_type == "project" && slug.current =
   body
 }`
 
+// The home page (singleton at `/`) — the variant-5 fold-in (issue #8). One wrapped
+// query (like SITE_SETTINGS_QUERY): the homePage singleton carries the section copy,
+// while the services teaser and featured strip are backed by the *same* `service` and
+// `project` documents as /storitve and /reference (ADR 0003 — no second source of
+// truth). `featured` rides along so the route picks the strip in app code with a
+// fallback (selectFeaturedProjects); `steps` feeds the teaser checklist.
+export const HOME_QUERY = groq`{
+  "home": *[_type == "homePage"][0]{
+    hero{
+      eyebrow, heading, lead, cta,
+      "image": image${FIGURE},
+      badges[]{ value, label }
+    },
+    stats[]{ value, label },
+    story{ eyebrow, heading, paragraphs, cta },
+    servicesSection{ eyebrow, heading, intro },
+    whyUs{ eyebrow, heading, items[]{ title, body } },
+    featuredSection{ eyebrow, heading, intro },
+    contact{ eyebrow, heading, text }
+  },
+  "services": *[_type == "service" && defined(slug.current)] | order(order asc, title asc){
+    _id,
+    title,
+    description,
+    "slug": slug.current,
+    "photo": photo${FIGURE},
+    steps
+  },
+  "projects": *[_type == "project" && defined(slug.current)] | order(order asc, year desc, title asc){
+    _id,
+    title,
+    location,
+    year,
+    summary,
+    "slug": slug.current,
+    "photo": gallery[0]${FIGURE},
+    featured
+  }
+}`
+
 // The About page singleton for /o-podjetju — the merged company story.
 export const ABOUT_QUERY = groq`*[_type == "aboutPage"][0]{
   title,
@@ -100,3 +141,4 @@ export const projectQuery = defineSanityQuery<ProjectData, { slug: string }>(
   PROJECT_BY_SLUG_QUERY,
 )
 export const aboutQuery = defineSanityQuery<AboutPageData>(ABOUT_QUERY)
+export const homeQuery = defineSanityQuery<HomeData>(HOME_QUERY)

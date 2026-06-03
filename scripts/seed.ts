@@ -11,7 +11,8 @@
  * `[gallery]`/embedded images into `project.gallery`.
  * Slice #6 merges the o-podjetju / vizija / kvaliteta WordPress pages (plus the
  * authored alpinist credibility story) into the single `aboutPage` singleton.
- * A later slice extends this script with homePage from the WP REST API.
+ * Slice #8 composes the `homePage` singleton (authored section copy — the variant-5
+ * fold-in) and flags the first few projects for the home featured strip.
  */
 import { randomUUID } from 'node:crypto'
 
@@ -48,6 +49,10 @@ const SERVICE_PAGE_IDS = [177, 179, 181, 183, 218]
 const PROJEKTI_CATEGORY_ID = 5
 // The three about stub pages, in narrative order: o-podjetju, vizija, kvaliteta.
 const ABOUT_PAGE_IDS = [159, 52, 172]
+// How many of the (date-desc ordered) projects to flag for the home featured strip.
+// A sensible default the editor can curate in Studio; the home falls back to the
+// first N anyway (selectFeaturedProjects), so an unflagged dataset still renders.
+const FEATURED_COUNT = 3
 
 // The alpinist "why we work at height" credibility story — a capability framing
 // folded into the About page (issue #6). This is NOT a migrated page: the personal
@@ -135,8 +140,9 @@ async function seedProjects() {
   for (const [i, post] of posts.entries()) {
     const { galleryUrls, ...doc } = wpPostToProject(post, i)
     const gallery = await uploadGallery(galleryUrls)
-    await client.createOrReplace({ ...doc, gallery })
-    console.log(`  ✓ project.${doc.slug} ("${doc.title}")`)
+    // Flag the first few as featured for the home strip (editor curates in Studio).
+    await client.createOrReplace({ ...doc, gallery, featured: i < FEATURED_COUNT })
+    console.log(`  ✓ project.${doc.slug.current} ("${doc.title}")`)
   }
 }
 
@@ -186,6 +192,101 @@ const siteSettings = {
   },
 }
 
+// A `normal` Portable Text paragraph block (keyed) for authored prose fields.
+const block = (text: string) => ({
+  _key: key(),
+  _type: 'block',
+  style: 'normal',
+  markDefs: [],
+  children: [{ _key: key(), _type: 'span', text, marks: [] }],
+})
+const stat = (value: string, label: string) => ({ _key: key(), _type: 'stat', value, label })
+const feature = (title: string, body: string) => ({ _key: key(), _type: 'feature', title, body })
+
+// The home page singleton — the variant-5 "Warm craftsman" fold-in (issue #8). Only
+// authored section copy lives here; the services teaser and featured strip render the
+// same `service` / `project` documents seeded above (ADR 0003). The hero photo is
+// attached by a human in Studio with the live seed (deferred).
+const homePage = {
+  _id: 'homePage',
+  _type: 'homePage',
+  hero: {
+    eyebrow: 'Alpinistična višinska dela · Slovenija',
+    heading: 'Sanacije na višini, brez odrov.',
+    lead:
+      'S pomočjo alpinističnega znanja in vrvne tehnike saniramo fasade, betonske površine in ' +
+      'jeklene konstrukcije tudi tam, kjer uporaba zidarskih odrov ni smotrna.',
+    cta: { _type: 'ctaLink', label: 'Povprašajte po ponudbi', href: '/kontakt' },
+    badges: [
+      stat('15+', 'let na višini'),
+      stat('140', 'enot na enem bloku'),
+      stat('100%', 'brez odrov'),
+    ],
+  },
+  stats: [
+    stat('2012', 'aktivni od'),
+    stat('15+', 'let na višini'),
+    stat('140', 'enot na enem bloku'),
+    stat('100%', 'brez gradbenih odrov'),
+  ],
+  story: {
+    eyebrow: 'O podjetju',
+    heading: 'Iz strasti do gora v poklic na višini',
+    paragraphs: [
+      block(
+        'Pred petnajstimi leti je štiri mlade fante začela družiti strast do gora, sčasoma pa ' +
+          'smo svoje alpinistične izkušnje začeli uporabljati tudi pri delu na višini.',
+      ),
+      block(
+        'S pomočjo alpinističnega znanja in opreme izpeljemo projekte, kjer uporaba zidarskih ' +
+          'odrov ni smotrna. Večina dela poteka z vrvno tehniko in visečimi odri.',
+      ),
+    ],
+    cta: { _type: 'ctaLink', label: 'Spoznajte ekipo', href: '/o-podjetju' },
+  },
+  servicesSection: {
+    eyebrow: 'Kaj delamo',
+    heading: 'Storitve',
+    intro:
+      'Od sanacije betona in fasad do jeklenih konstrukcij in sončnih elektrarn — vse z vrvno ' +
+      'tehniko, brez gradbenih odrov.',
+  },
+  whyUs: {
+    eyebrow: 'Zakaj mi',
+    heading: 'Kvaliteta na višini',
+    intro: 'Štiri prednosti, ki jih prinese alpinistični pristop k delu na višini.',
+    items: [
+      feature(
+        'Brez odrov',
+        'Z vrvno tehniko in visečimi odri pridemo tja, kjer postavljanje zidarskih odrov ni smotrno.',
+      ),
+      feature(
+        'Krajši rok izvedbe',
+        'Delo po sklopih pomeni manj motenj za stanovalce in hitrejši zaključek projekta.',
+      ),
+      feature(
+        'Najkvalitetnejši materiali',
+        'Skrbno izbrani materiali, ki ustrezajo ekološkim standardom — že iz naših alpinističnih let.',
+      ),
+      feature(
+        'Vrhunsko usposobljena ekipa',
+        'Vsi delavci smo usposobljeni za delo na višini in pripravljeni na največje izzive.',
+      ),
+    ],
+  },
+  featuredSection: {
+    eyebrow: 'Izbrane reference',
+    heading: 'Naši projekti',
+    intro:
+      'Nekaj zaključenih projektov — od stanovanjskih blokov do specialnih višinskih del doma in v tujini.',
+  },
+  contact: {
+    eyebrow: 'Kontakt',
+    heading: 'Povprašajte po ponudbi',
+    text: 'Pokličite nas ali pišite — svetujemo brezplačno in pripravimo ponudbo brez obveznosti.',
+  },
+}
+
 async function main() {
   await client.createOrReplace(siteSettings)
   console.log('✓ seeded siteSettings')
@@ -198,6 +299,9 @@ async function main() {
 
   await seedAbout()
   console.log('✓ seeded aboutPage')
+
+  await client.createOrReplace(homePage)
+  console.log('✓ seeded homePage')
 }
 
 main().catch((err) => {

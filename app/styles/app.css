@@ -5,10 +5,11 @@
 @plugin '@tailwindcss/typography';
 
 /* ============================================================
-   Leteče Kele — prototype theme. LIGHT ONLY (no dark mode).
-   Shared across all 5 variants: brand orange + neutral ink.
-   Each variant owns its own layout; this file only provides
-   tokens + a few primitives. THROWAWAY prototype styling.
+   Leteče Kele — site theme. LIGHT ONLY (no dark mode).
+   Brand orange + neutral ink/paper/bone tokens, Manrope for
+   display headings. This file owns the design tokens and a
+   few primitives (container, scroll-snap slider helpers);
+   components carry their own layout.
    ============================================================ */
 
 :root {
