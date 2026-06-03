@@ -77,6 +77,17 @@ export type ProjectListItem = {
 }
 
 /**
+ * The About page (singleton at /o-podjetju) — the merged company story (CONTEXT.md):
+ * about + vision + quality + the alpinist credibility story as one coherent narrative.
+ */
+export type AboutPageData = {
+  title: string
+  intro?: string
+  heroImage: SanityImage | null
+  body?: PortableTextBlock[] | null
+}
+
+/**
  * A single project for the /reference/:slug detail page. A non-empty `body` reads
  * as a full case study; an empty one reads as a gallery reference card (ADR 0003).
  */

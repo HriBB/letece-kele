@@ -1,0 +1,101 @@
+/**
+ * Pure WordPress-pages → `aboutPage`-singleton merger for the seed (ADR 0005, issue #6).
+ *
+ * The old site spread the company story across thin stub pages — o-podjetju (159),
+ * vizija (52) and kvaliteta (172) — and buried the alpinist "why we work at height"
+ * angle in a personal blog. This merges the about pages (and an authored alpinist
+ * *capability* section — NOT the personal climbing trip reports, ADR 0002) into one
+ * coherent `aboutPage`: a single title, a lead intro, and one body where each former
+ * page becomes a section. Slovenian prose kept verbatim, 2012 cruft dropped.
+ *
+ * The seed fetches the about pages from the live REST API and passes them here in
+ * order; asset upload + `createOrReplace` stay in the seed. Everything here is a
+ * deterministic, network-free transform, fully unit-testable against committed
+ * fixtures. Cleaning reuses the shared `cleanWpBody`. Imported with an explicit `.ts`
+ * path so the seed can run it under `node --experimental-strip-types` (no path-alias
+ * resolver there).
+ */
+import { cleanWpBody } from './wp-body.ts'
+
+import type { GalleryImage, PortableTextBlock } from './wp-body.ts'
+
+/** The slice of the WordPress REST page shape the merger reads. */
+export type WpPage = {
+  slug: string
+  title: { rendered: string }
+  excerpt?: { rendered: string } | null
+  content: { rendered: string }
+}
+
+/** Seedable `aboutPage` content — pure data; the seed uploads the hero image. */
+export type AboutSeedDoc = {
+  _id: 'aboutPage'
+  _type: 'aboutPage'
+  title: string
+  intro: string
+  body: PortableTextBlock[]
+  /** Remote WordPress upload URL for the hero (seed uploads it as an asset). */
+  heroUrl?: string
+}
+
+/** Flatten Portable Text blocks back to plain prose. */
+function plainText(blocks: PortableTextBlock[]): string {
+  return blocks.map((b) => b.children.map((c) => c.text).join('')).join(' ')
+}
+
+/** Decode a short inline string (e.g. a title) by routing it through the cleaner. */
+function decodeInline(html: string): string {
+  return plainText(cleanWpBody(`<p>${html}</p>`).portableText)
+}
+
+/** An h2 section heading delineating one former stub page within the merged body. */
+function headingBlock(text: string): PortableTextBlock {
+  return {
+    _type: 'block',
+    _key: 'section',
+    style: 'h2',
+    markDefs: [],
+    children: [{ _type: 'span', _key: 'sectionspan', text, marks: [] }],
+  }
+}
+
+export function wpPagesToAbout(pages: WpPage[]): AboutSeedDoc {
+  const first = pages[0]
+
+  // Merge every page into one body. The first page is the lead — its title is the
+  // page H1, so its prose opens the narrative with no injected heading. Each later
+  // stub page (vizija / kvaliteta / the alpinist story) opens with its title as an
+  // h2, turning separate stub pages into sections of one coherent story. Embedded
+  // images are lifted out of the prose, in document order, for the hero photo.
+  const merged: PortableTextBlock[] = []
+  const gallery: GalleryImage[] = []
+  pages.forEach((page, i) => {
+    const cleaned = cleanWpBody(page.content.rendered)
+    if (i > 0) merged.push(headingBlock(decodeInline(page.title.rendered)))
+    merged.push(...cleaned.portableText)
+    gallery.push(...cleaned.gallery)
+  })
+
+  // Re-key after merge: each cleanWpBody call numbers its blocks from 0, so plain
+  // concatenation collides keys — Sanity requires unique _keys within an array.
+  const body = merged.map((b, i) => ({
+    ...b,
+    _key: `b${i}`,
+    children: b.children.map((c, j) => ({ ...c, _key: `b${i}s${j}` })),
+  }))
+
+  // Short intro: the first page's excerpt, dropping WordPress's "[…]" read-more tail
+  // (formatting junk, not copy).
+  const intro = plainText(cleanWpBody(first?.excerpt?.rendered).portableText)
+    .replace(/\s*\[…\]\s*$/, '')
+    .trim()
+
+  return {
+    _id: 'aboutPage',
+    _type: 'aboutPage',
+    title: decodeInline(first?.title.rendered ?? ''),
+    intro,
+    body,
+    heroUrl: gallery[0]?.src,
+  }
+}

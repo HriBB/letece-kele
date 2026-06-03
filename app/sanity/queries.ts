@@ -1,6 +1,7 @@
 import groq from 'groq'
 
 import type {
+  AboutPageData,
   ProjectData,
   ProjectListItem,
   ServiceData,
@@ -77,6 +78,14 @@ export const PROJECT_BY_SLUG_QUERY = groq`*[_type == "project" && slug.current =
   body
 }`
 
+// The About page singleton for /o-podjetju — the merged company story.
+export const ABOUT_QUERY = groq`*[_type == "aboutPage"][0]{
+  title,
+  intro,
+  "heroImage": heroImage${FIGURE},
+  body
+}`
+
 // Descriptors — each binds a query string to its result type (and params type,
 // where parameterised). The route names one once; loadSanity + useSanity reference
 // the same value, so query/params can't drift between server and client. See
@@ -90,3 +99,4 @@ export const projectsQuery = defineSanityQuery<ProjectListItem[]>(PROJECTS_QUERY
 export const projectQuery = defineSanityQuery<ProjectData, { slug: string }>(
   PROJECT_BY_SLUG_QUERY,
 )
+export const aboutQuery = defineSanityQuery<AboutPageData>(ABOUT_QUERY)

@@ -12,7 +12,9 @@ export default [
     // project (#5) — concept `project`, route/label "reference" (ADR 0003)
     route('reference', './routes/website/reference.tsx'),
     route('reference/:slug', './routes/website/referenca.tsx'),
-    // about / contact route groups land in slices #6–#8.
+    // about (#6) — the merged company story singleton
+    route('o-podjetju', './routes/website/o-podjetju.tsx'),
+    // contact route group lands in a later slice.
   ]),
   // Embedded Sanity Studio.
   route('studio/*', './routes/studio.tsx'),

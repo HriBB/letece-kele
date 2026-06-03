@@ -9,7 +9,9 @@
  * Slice #4 adds the five WordPress `service` pages, cleaned via the shared cleaner.
  * Slice #5 adds the `projekti`-category posts as `project` documents, lifting the
  * `[gallery]`/embedded images into `project.gallery`.
- * Later slices extend this script: aboutPage / homePage from the WP REST API.
+ * Slice #6 merges the o-podjetju / vizija / kvaliteta WordPress pages (plus the
+ * authored alpinist credibility story) into the single `aboutPage` singleton.
+ * A later slice extends this script with homePage from the WP REST API.
  */
 import { randomUUID } from 'node:crypto'
 
@@ -19,6 +21,7 @@ import { createClient } from '@sanity/client'
 // explicit .ts paths so they run under `node --experimental-strip-types`.
 import { wpPageToService } from '../app/lib/wp-service.ts'
 import { wpPostToProject } from '../app/lib/wp-project.ts'
+import { wpPagesToAbout } from '../app/lib/wp-about.ts'
 
 import type { WpPost } from '../app/lib/wp-project.ts'
 
@@ -43,6 +46,25 @@ const SERVICE_PAGE_IDS = [177, 179, 181, 183, 218]
 // utrinki) live under other categories and are NOT migrated (ADR 0002) — fetching
 // only this category is what keeps them out of the dataset.
 const PROJEKTI_CATEGORY_ID = 5
+// The three about stub pages, in narrative order: o-podjetju, vizija, kvaliteta.
+const ABOUT_PAGE_IDS = [159, 52, 172]
+
+// The alpinist "why we work at height" credibility story — a capability framing
+// folded into the About page (issue #6). This is NOT a migrated page: the personal
+// climbing trip reports (filmi/reportaže/utrinki) are deliberately left out (ADR
+// 0002). Authored placeholder copy — a human finalises the exact wording with the
+// live seed.
+const ALPINIST_STORY: WpPage = {
+  slug: 'alpinizem',
+  title: { rendered: 'Zakaj delamo na višini' },
+  content: {
+    rendered:
+      '<p>Ekipa Letečih Kel so izurjeni alpinisti z večletnimi izkušnjami v gorah. ' +
+      'Prav znanje vrvne tehnike nam omogoča varen dostop do najtežje dostopnih mest — ' +
+      'fasad, dimnikov, mostov in jeklenih konstrukcij — brez gradbenih odrov. Delo na ' +
+      'višini ni naš konjiček, ampak poklicna prednost: hitreje, ceneje in z manj posegi v okolico.</p>',
+  },
+}
 
 type WpPage = {
   slug: string
@@ -118,6 +140,17 @@ async function seedProjects() {
   }
 }
 
+async function seedAbout() {
+  console.log(`Fetching ${ABOUT_PAGE_IDS.length} WordPress about pages…`)
+  const pages: WpPage[] = []
+  for (const id of ABOUT_PAGE_IDS) pages.push(await fetchWpPage(id))
+  // Merge the about pages + the authored alpinist story into the one singleton.
+  const { heroUrl, ...doc } = wpPagesToAbout([...pages, ALPINIST_STORY])
+  const heroImage = await uploadFigure(heroUrl, doc.title)
+  await client.createOrReplace({ ...doc, heroImage })
+  console.log(`  ✓ aboutPage ("${doc.title}")`)
+}
+
 const NAV = [
   { label: 'Storitve', href: '/storitve' },
   { label: 'Reference', href: '/reference' },
@@ -162,6 +195,9 @@ async function main() {
 
   await seedProjects()
   console.log('✓ seeded projects')
+
+  await seedAbout()
+  console.log('✓ seeded aboutPage')
 }
 
 main().catch((err) => {

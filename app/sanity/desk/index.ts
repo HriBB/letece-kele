@@ -1,4 +1,4 @@
-import { CaseIcon, CogIcon, WrenchIcon } from '@sanity/icons'
+import { CaseIcon, CogIcon, InfoOutlineIcon, WrenchIcon } from '@sanity/icons'
 
 import type {
   DefaultDocumentNodeResolver,
@@ -29,7 +29,8 @@ export const structure: StructureResolver = (S) =>
       S.documentTypeListItem('service').title('Services').icon(WrenchIcon),
       S.documentTypeListItem('project').title('Projects').icon(CaseIcon),
       S.divider(),
-      // homePage / aboutPage singletons land in later slices.
+      // Singletons. The homePage singleton lands in a later slice.
+      singleton(S, 'aboutPage', 'About page', InfoOutlineIcon),
       singleton(S, 'siteSettings', 'Site settings', CogIcon),
     ])
 
