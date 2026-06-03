@@ -1,8 +1,8 @@
-import { loadQuery } from '~/sanity/loader.server'
-import { loadQueryOptions } from '~/sanity/loadQueryOptions.server'
-
 import type { QueryParams } from '@sanity/client'
 import type { SanityLoaderData, SanityQuery } from '~/sanity/data'
+
+import { loadQuery } from '~/sanity/loader.server'
+import { loadQueryOptions } from '~/sanity/loadQueryOptions.server'
 
 type LoadOptions<Params extends QueryParams> = {
   /** Query parameters, typed by the descriptor (e.g. `{ slug }`). */

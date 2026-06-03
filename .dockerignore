@@ -1,0 +1,17 @@
+# Keep secrets and build cruft out of the image context (issue #10).
+# .env holds every Sanity token + the session secret — it must never be copied
+# into a layer; secrets are supplied at runtime instead.
+.env
+.env.*
+node_modules
+.pnpm-store
+build
+.react-router
+.tmp
+.git
+.gitignore
+.sanity
+.claude
+docs
+*.md
+.DS_Store

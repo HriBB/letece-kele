@@ -31,6 +31,21 @@ describe('resolveLink', () => {
   it('falls back to a safe in-page anchor when href is missing', () => {
     expect(resolveLink(undefined)).toEqual({ href: '#', internal: true })
   })
+
+  it('treats a tel: link as external but same-tab (plain <a>, no new tab)', () => {
+    // Client-side routing can't handle tel: — it must render a plain <a>, not a <Link>.
+    expect(resolveLink('tel:+38640465749')).toEqual({
+      href: 'tel:+38640465749',
+      internal: false,
+    })
+  })
+
+  it('treats a mailto: link as external but same-tab', () => {
+    expect(resolveLink('mailto:info@letecekele.si')).toEqual({
+      href: 'mailto:info@letecekele.si',
+      internal: false,
+    })
+  })
 })
 
 describe('serviceHref', () => {

@@ -1,22 +1,162 @@
 import groq from 'groq'
 
-import type { SiteData } from '~/lib/types'
+import type {
+  AboutPageData,
+  HomeData,
+  ProjectData,
+  ProjectListItem,
+  ServiceData,
+  ServiceListItem,
+  SiteData,
+} from '~/lib/types'
 
 import { defineSanityQuery } from '~/sanity/data'
 
+// Expand an image asset with the metadata needed for responsive rendering + LQIP
+// (ADR 0005). Shared infra: every content slice reuses this on its image fields.
+export const FIGURE = /* groq */ `{
+  _type,
+  alt,
+  hotspot,
+  crop,
+  asset->{ _id, metadata { lqip, dimensions } }
+}`
+
 // Site-wide settings (header nav, footer, contact, legal) wrapping every route.
+// `services` rides along (title + slug only) to feed the site-wide LocalBusiness
+// JSON-LD offer catalog (issue #9) — same `service` documents as /storitve.
 export const SITE_SETTINGS_QUERY = groq`{
   "settings": *[_type == "siteSettings"][0]{
     title,
+    "logo": logo${FIGURE},
     nav[]{ label, href },
     headerCta,
     contact,
     legal,
     footer
+  },
+  "services": *[_type == "service" && defined(slug.current)] | order(order asc, title asc){
+    title,
+    "slug": slug.current
   }
 }`
 
-// Descriptor — binds the query string to its result type. The route names this
-// once; loadSanity + useSanity reference the same value, so query/params can't
-// drift between server and client. See app/sanity/data.ts.
+// All services for the /storitve listing, in editor-defined order.
+export const SERVICES_QUERY = groq`*[_type == "service" && defined(slug.current)] | order(order asc, title asc){
+  _id,
+  title,
+  description,
+  "slug": slug.current,
+  "photo": photo${FIGURE}
+}`
+
+// A single service by slug for the /storitve/:slug detail page.
+export const SERVICE_BY_SLUG_QUERY = groq`*[_type == "service" && slug.current == $slug][0]{
+  _id,
+  title,
+  description,
+  "slug": slug.current,
+  "photo": photo${FIGURE},
+  steps
+}`
+
+// All projects for the /reference listing, in editor-defined order. The lead photo
+// is the first gallery image (ADR 0003 — one type backs listing + detail + home).
+export const PROJECTS_QUERY = groq`*[_type == "project" && defined(slug.current)] | order(order asc, year desc, title asc){
+  _id,
+  title,
+  location,
+  year,
+  summary,
+  "slug": slug.current,
+  "photo": gallery[0]${FIGURE}
+}`
+
+// A single project by slug for the /reference/:slug detail page. A non-empty `body`
+// renders as a case study; an empty one renders as a gallery reference card.
+export const PROJECT_BY_SLUG_QUERY = groq`*[_type == "project" && slug.current == $slug][0]{
+  _id,
+  title,
+  location,
+  year,
+  summary,
+  "slug": slug.current,
+  "gallery": gallery[]${FIGURE},
+  body
+}`
+
+// The home page (singleton at `/`) — the variant-5 fold-in (issue #8). One wrapped
+// query (like SITE_SETTINGS_QUERY): the homePage singleton carries the section copy,
+// while the services teaser and featured strip are backed by the *same* `service` and
+// `project` documents as /storitve and /reference (ADR 0003 — no second source of
+// truth). `featured` rides along so the route picks the strip in app code with a
+// fallback (selectFeaturedProjects); `steps` feeds the teaser checklist.
+export const HOME_QUERY = groq`{
+  "home": *[_type == "homePage"][0]{
+    hero{
+      eyebrow, heading, lead, cta,
+      "image": image${FIGURE},
+      badges[]{ value, label }
+    },
+    stats[]{ value, label },
+    story{ eyebrow, heading, paragraphs, cta },
+    servicesSection{ eyebrow, heading, intro },
+    whyUs{ eyebrow, heading, intro, items[]{ title, body } },
+    featuredSection{ eyebrow, heading, intro },
+    contact{ eyebrow, heading, text }
+  },
+  "services": *[_type == "service" && defined(slug.current)] | order(order asc, title asc){
+    _id,
+    title,
+    description,
+    "slug": slug.current,
+    "photo": photo${FIGURE},
+    steps
+  },
+  "projects": *[_type == "project" && defined(slug.current)] | order(order asc, year desc, title asc){
+    _id,
+    title,
+    location,
+    year,
+    summary,
+    "slug": slug.current,
+    "photo": gallery[0]${FIGURE},
+    featured
+  }
+}`
+
+// Slugs + last-modified for the sitemap (issue #9). Server-only resource route reads
+// (serverClient, not the descriptor seam) — the sitemap needs no client hydration.
+export const SERVICE_SLUGS_QUERY = groq`*[_type == "service" && defined(slug.current)]{
+  "slug": slug.current,
+  _updatedAt
+}`
+
+export const PROJECT_SLUGS_QUERY = groq`*[_type == "project" && defined(slug.current)]{
+  "slug": slug.current,
+  _updatedAt
+}`
+
+// The About page singleton for /o-podjetju — the merged company story.
+export const ABOUT_QUERY = groq`*[_type == "aboutPage"][0]{
+  title,
+  intro,
+  "heroImage": heroImage${FIGURE},
+  body
+}`
+
+// Descriptors — each binds a query string to its result type (and params type,
+// where parameterised). The route names one once; loadSanity + useSanity reference
+// the same value, so query/params can't drift between server and client. See
+// app/sanity/data.ts.
 export const siteQuery = defineSanityQuery<SiteData>(SITE_SETTINGS_QUERY)
+export const servicesQuery = defineSanityQuery<ServiceListItem[]>(SERVICES_QUERY)
+export const serviceQuery = defineSanityQuery<ServiceData, { slug: string }>(
+  SERVICE_BY_SLUG_QUERY,
+)
+export const projectsQuery = defineSanityQuery<ProjectListItem[]>(PROJECTS_QUERY)
+export const projectQuery = defineSanityQuery<ProjectData, { slug: string }>(
+  PROJECT_BY_SLUG_QUERY,
+)
+export const aboutQuery = defineSanityQuery<AboutPageData>(ABOUT_QUERY)
+export const homeQuery = defineSanityQuery<HomeData>(HOME_QUERY)

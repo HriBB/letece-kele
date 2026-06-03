@@ -1,5 +1,10 @@
-import { site } from '~/lib/site-data'
 import { cn } from '~/lib/utils'
+
+// Brand wordmark constants — the company name + "Višinska dela" subtitle are fixed
+// brand chrome (not CMS content). The header prefers the siteSettings logo image and
+// uses this component only as the fallback.
+const BRAND_NAME = 'Leteče Kele'
+const BRAND_SUB = 'Višinska dela'
 
 /**
  * Brand logo — the real letecekele.si wordmark PNG (black "Leteče kele" + orange
@@ -30,7 +35,7 @@ export function Logo({
   const img = (
     <img
       src={onDark ? '/images/logo-white.png' : '/images/logo.png'}
-      alt={`${site.name} — ${site.wordmarkSub}`}
+      alt={`${BRAND_NAME} — ${BRAND_SUB}`}
       width={249}
       height={107}
       className={cn('h-9 w-auto', className)}
@@ -44,11 +49,11 @@ export function Logo({
       {img}
       <span
         className={cn(
-          'mt-1 text-[0.62rem] font-semibold uppercase tracking-[0.22em] opacity-70',
+          'mt-1 text-[0.62rem] font-semibold tracking-[0.22em] uppercase opacity-70',
           subClassName,
         )}
       >
-        {site.wordmarkSub}
+        {BRAND_SUB}
       </span>
     </span>
   )
