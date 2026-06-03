@@ -4,6 +4,7 @@ import type { SiteSettings } from '~/lib/types'
 
 import { mapLink } from '~/lib/maps'
 
+import { LegalDetails } from '~/components/LegalDetails'
 import { SmartLink } from '~/components/SmartLink'
 
 /**
@@ -103,32 +104,7 @@ export function ContactPage({ settings }: { settings: SiteSettings | null }) {
             <Building2 size={16} className="text-orange" />
             Osnovni podatki
           </h2>
-          <dl className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
-            {legal.companyName && (
-              <div className="sm:col-span-2">
-                <dt className="text-xs text-ink-soft">Podjetje</dt>
-                <dd className="font-semibold text-ink">{legal.companyName}</dd>
-              </div>
-            )}
-            {legal.vat && (
-              <div>
-                <dt className="text-xs text-ink-soft">Davčna št.</dt>
-                <dd className="font-semibold text-ink">{legal.vat}</dd>
-              </div>
-            )}
-            {legal.reg && (
-              <div>
-                <dt className="text-xs text-ink-soft">Matična št.</dt>
-                <dd className="font-semibold text-ink">{legal.reg}</dd>
-              </div>
-            )}
-            {legal.bankIban && (
-              <div className="sm:col-span-2">
-                <dt className="text-xs text-ink-soft">{legal.bankName ?? 'Banka'}</dt>
-                <dd className="font-semibold text-ink">{legal.bankIban}</dd>
-              </div>
-            )}
-          </dl>
+          <LegalDetails legal={legal} tone="ink" />
         </section>
       )}
     </article>

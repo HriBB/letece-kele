@@ -1,9 +1,9 @@
 import type { ProjectData } from '~/lib/types'
 
 import { projectMeta } from '~/lib/format'
+import { ContactCta } from '~/components/ContactCta'
 import { Gallery } from '~/components/Gallery'
 import { PortableText } from '~/components/PortableText'
-import { SmartLink } from '~/components/SmartLink'
 
 /**
  * Project detail layout (ADR 0003 — one type, two depths): a title with a
@@ -57,29 +57,13 @@ export function ProjectPage({
         </section>
       ) : null}
 
-      {/* Tap-to-call / quote CTA */}
-      <section className="mt-16 rounded-2xl bg-bone p-8 text-center sm:p-12">
-        <h2 className="text-2xl font-bold text-ink">Potrebujete podobno rešitev?</h2>
-        <p className="mt-3 text-ink-soft">
-          Pokličite nas ali povprašajte po ponudbi — svetujemo brezplačno.
-        </p>
-        <div className="mt-7 flex flex-wrap justify-center gap-4">
-          {phoneHref ? (
-            <a
-              href={phoneHref}
-              className="inline-flex items-center justify-center rounded-full bg-orange px-6 py-3 font-bold text-white transition-colors hover:bg-orange-dark"
-            >
-              {phone ? `Pokličite ${phone}` : 'Pokličite nas'}
-            </a>
-          ) : null}
-          <SmartLink
-            href={quoteHref}
-            className="inline-flex items-center justify-center rounded-full border-2 border-ink px-6 py-3 font-bold text-ink transition-colors hover:bg-ink hover:text-white"
-          >
-            {quoteLabel}
-          </SmartLink>
-        </div>
-      </section>
+      <ContactCta
+        heading="Potrebujete podobno rešitev?"
+        phone={phone}
+        phoneHref={phoneHref}
+        quoteHref={quoteHref}
+        quoteLabel={quoteLabel}
+      />
     </article>
   )
 }

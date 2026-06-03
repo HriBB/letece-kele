@@ -2,7 +2,7 @@ import { Building2, Mail, MapPin, Phone } from 'lucide-react'
 
 import type { HomeContactCopy, SiteSettings } from '~/lib/types'
 
-import { SmartLink } from '~/components/SmartLink'
+import { LegalDetails } from '~/components/LegalDetails'
 
 /**
  * Home contact CTA: a dark conversion panel with a huge tap-to-call phone CTA and a
@@ -73,32 +73,7 @@ export function HomeContact({
                 <Building2 size={16} className="text-orange" />
                 Osnovni podatki
               </h3>
-              <dl className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
-                {legal.companyName ? (
-                  <div className="sm:col-span-2">
-                    <dt className="text-xs text-paper/50">Podjetje</dt>
-                    <dd className="font-semibold">{legal.companyName}</dd>
-                  </div>
-                ) : null}
-                {legal.vat ? (
-                  <div>
-                    <dt className="text-xs text-paper/50">Davčna št.</dt>
-                    <dd className="font-semibold">{legal.vat}</dd>
-                  </div>
-                ) : null}
-                {legal.reg ? (
-                  <div>
-                    <dt className="text-xs text-paper/50">Matična št.</dt>
-                    <dd className="font-semibold">{legal.reg}</dd>
-                  </div>
-                ) : null}
-                {legal.bankIban ? (
-                  <div className="sm:col-span-2">
-                    <dt className="text-xs text-paper/50">{legal.bankName ?? 'Banka'}</dt>
-                    <dd className="font-semibold">{legal.bankIban}</dd>
-                  </div>
-                ) : null}
-              </dl>
+              <LegalDetails legal={legal} tone="paper" />
             </div>
           ) : null}
         </div>

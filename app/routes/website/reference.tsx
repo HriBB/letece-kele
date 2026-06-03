@@ -8,10 +8,8 @@ import { projectsQuery } from '~/sanity/queries'
 import { pageMeta } from '~/lib/meta'
 import { projectHref } from '~/lib/link'
 import { projectMeta } from '~/lib/format'
-import { SIZES } from '~/lib/image'
 
-import { Image } from '~/components/Image'
-import { SmartLink } from '~/components/SmartLink'
+import { ListingCard } from '~/components/ListingCard'
 
 export const loader = ({ request }: Route.LoaderArgs) =>
   loadSanity(request, projectsQuery)
@@ -33,36 +31,16 @@ export default function ReferencesPage() {
       </h1>
 
       <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {projects.map((p) => {
-          const meta = projectMeta(p)
-          return (
-            <SmartLink
-              key={p._id}
-              href={projectHref(p.slug)}
-              className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-paper transition-shadow hover:shadow-lg"
-            >
-              <div className="aspect-[4/3] overflow-hidden">
-                <Image
-                  image={p.photo}
-                  sizes={SIZES.card}
-                  aspectRatio={4 / 3}
-                  alt={p.title}
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-              </div>
-              <div className="flex flex-1 flex-col p-6">
-                <h2 className="text-xl font-bold text-ink">{p.title}</h2>
-                {meta ? <p className="mt-2 font-bold text-orange">{meta}</p> : null}
-                {p.summary ? (
-                  <p className="mt-3 text-ink-soft">{p.summary}</p>
-                ) : null}
-                <span className="mt-6 inline-flex font-bold text-orange">
-                  Preberi več →
-                </span>
-              </div>
-            </SmartLink>
-          )
-        })}
+        {projects.map((p) => (
+          <ListingCard
+            key={p._id}
+            href={projectHref(p.slug)}
+            image={p.photo}
+            title={p.title}
+            meta={projectMeta(p)}
+            summary={p.summary ?? undefined}
+          />
+        ))}
       </div>
     </section>
   )
