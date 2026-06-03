@@ -1,6 +1,12 @@
 import groq from 'groq'
 
-import type { ServiceData, ServiceListItem, SiteData } from '~/lib/types'
+import type {
+  ProjectData,
+  ProjectListItem,
+  ServiceData,
+  ServiceListItem,
+  SiteData,
+} from '~/lib/types'
 
 import { defineSanityQuery } from '~/sanity/data'
 
@@ -46,6 +52,31 @@ export const SERVICE_BY_SLUG_QUERY = groq`*[_type == "service" && slug.current =
   steps
 }`
 
+// All projects for the /reference listing, in editor-defined order. The lead photo
+// is the first gallery image (ADR 0003 — one type backs listing + detail + home).
+export const PROJECTS_QUERY = groq`*[_type == "project" && defined(slug.current)] | order(order asc, year desc, title asc){
+  _id,
+  title,
+  location,
+  year,
+  summary,
+  "slug": slug.current,
+  "photo": gallery[0]${FIGURE}
+}`
+
+// A single project by slug for the /reference/:slug detail page. A non-empty `body`
+// renders as a case study; an empty one renders as a gallery reference card.
+export const PROJECT_BY_SLUG_QUERY = groq`*[_type == "project" && slug.current == $slug][0]{
+  _id,
+  title,
+  location,
+  year,
+  summary,
+  "slug": slug.current,
+  "gallery": gallery[]${FIGURE},
+  body
+}`
+
 // Descriptors — each binds a query string to its result type (and params type,
 // where parameterised). The route names one once; loadSanity + useSanity reference
 // the same value, so query/params can't drift between server and client. See
@@ -54,4 +85,8 @@ export const siteQuery = defineSanityQuery<SiteData>(SITE_SETTINGS_QUERY)
 export const servicesQuery = defineSanityQuery<ServiceListItem[]>(SERVICES_QUERY)
 export const serviceQuery = defineSanityQuery<ServiceData, { slug: string }>(
   SERVICE_BY_SLUG_QUERY,
+)
+export const projectsQuery = defineSanityQuery<ProjectListItem[]>(PROJECTS_QUERY)
+export const projectQuery = defineSanityQuery<ProjectData, { slug: string }>(
+  PROJECT_BY_SLUG_QUERY,
 )

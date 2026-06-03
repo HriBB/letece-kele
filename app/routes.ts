@@ -9,7 +9,10 @@ export default [
     // service (#4)
     route('storitve', './routes/website/storitve.tsx'),
     route('storitve/:slug', './routes/website/storitev.tsx'),
-    // project / about / contact route groups land in slices #5–#8.
+    // project (#5) — concept `project`, route/label "reference" (ADR 0003)
+    route('reference', './routes/website/reference.tsx'),
+    route('reference/:slug', './routes/website/referenca.tsx'),
+    // about / contact route groups land in slices #6–#8.
   ]),
   // Embedded Sanity Studio.
   route('studio/*', './routes/studio.tsx'),

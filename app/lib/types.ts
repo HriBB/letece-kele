@@ -63,3 +63,30 @@ export type ServiceData = {
   photo: SanityImage | null
   steps?: PortableTextBlock[] | null
 }
+
+/** A project (sl: reference) as shown on the /reference listing card. */
+export type ProjectListItem = {
+  _id: string
+  title: string
+  location?: string
+  year?: number
+  summary?: string
+  slug: string
+  /** Lead photo: the first gallery image. */
+  photo: SanityImage | null
+}
+
+/**
+ * A single project for the /reference/:slug detail page. A non-empty `body` reads
+ * as a full case study; an empty one reads as a gallery reference card (ADR 0003).
+ */
+export type ProjectData = {
+  _id: string
+  title: string
+  location?: string
+  year?: number
+  summary?: string
+  slug: string
+  gallery?: SanityImage[] | null
+  body?: PortableTextBlock[] | null
+}
