@@ -1,6 +1,6 @@
 import groq from 'groq'
 
-import type { SiteData } from '~/lib/types'
+import type { ServiceData, ServiceListItem, SiteData } from '~/lib/types'
 
 import { defineSanityQuery } from '~/sanity/data'
 
@@ -27,7 +27,31 @@ export const SITE_SETTINGS_QUERY = groq`{
   }
 }`
 
-// Descriptor — binds the query string to its result type. The route names this
-// once; loadSanity + useSanity reference the same value, so query/params can't
-// drift between server and client. See app/sanity/data.ts.
+// All services for the /storitve listing, in editor-defined order.
+export const SERVICES_QUERY = groq`*[_type == "service" && defined(slug.current)] | order(order asc, title asc){
+  _id,
+  title,
+  description,
+  "slug": slug.current,
+  "photo": photo${FIGURE}
+}`
+
+// A single service by slug for the /storitve/:slug detail page.
+export const SERVICE_BY_SLUG_QUERY = groq`*[_type == "service" && slug.current == $slug][0]{
+  _id,
+  title,
+  description,
+  "slug": slug.current,
+  "photo": photo${FIGURE},
+  steps
+}`
+
+// Descriptors — each binds a query string to its result type (and params type,
+// where parameterised). The route names one once; loadSanity + useSanity reference
+// the same value, so query/params can't drift between server and client. See
+// app/sanity/data.ts.
 export const siteQuery = defineSanityQuery<SiteData>(SITE_SETTINGS_QUERY)
+export const servicesQuery = defineSanityQuery<ServiceListItem[]>(SERVICES_QUERY)
+export const serviceQuery = defineSanityQuery<ServiceData, { slug: string }>(
+  SERVICE_BY_SLUG_QUERY,
+)

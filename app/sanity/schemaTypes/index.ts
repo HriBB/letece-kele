@@ -1,5 +1,6 @@
 import type { SchemaTypeDefinition } from 'sanity'
 
+import { serviceType } from './documents/service'
 import { figureType } from './objects/figure'
 import { ctaLinkType, navLinkType } from './objects/shared'
 import { siteSettingsType } from './singletons/siteSettings'
@@ -9,6 +10,8 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   figureType,
   ctaLinkType,
   navLinkType,
+  // Documents (collections)
+  serviceType,
   // Singletons
   siteSettingsType,
 ]

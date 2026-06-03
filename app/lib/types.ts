@@ -2,6 +2,8 @@
 // its own types (service, project, homePage, aboutPage); this file currently holds
 // the site-wide settings consumed by the shared layout (Header / Footer / contact).
 
+import type { PortableTextBlock } from '@portabletext/types'
+
 import type { SanityImage } from '~/lib/image'
 
 export type NavLink = { label: string; href: string }
@@ -41,4 +43,23 @@ export type SiteSettings = {
 
 export type SiteData = {
   settings: SiteSettings | null
+}
+
+/** A service (sl: storitev) as shown on the /storitve listing card. */
+export type ServiceListItem = {
+  _id: string
+  title: string
+  description?: string
+  slug: string
+  photo: SanityImage | null
+}
+
+/** A single service for the /storitve/:slug detail page. */
+export type ServiceData = {
+  _id: string
+  title: string
+  description?: string
+  slug: string
+  photo: SanityImage | null
+  steps?: PortableTextBlock[] | null
 }

@@ -1,4 +1,4 @@
-import { CogIcon } from '@sanity/icons'
+import { CogIcon, WrenchIcon } from '@sanity/icons'
 
 import type {
   DefaultDocumentNodeResolver,
@@ -25,7 +25,10 @@ export const structure: StructureResolver = (S) =>
     .id('root')
     .title('Content')
     .items([
-      // service / project collections + homePage / aboutPage singletons land in later slices.
+      // Collections.
+      S.documentTypeListItem('service').title('Services').icon(WrenchIcon),
+      S.divider(),
+      // project collection + homePage / aboutPage singletons land in later slices.
       singleton(S, 'siteSettings', 'Site settings', CogIcon),
     ])
 
