@@ -108,3 +108,7 @@
     display: none;
   }
 }
+
+@utility debug {
+  border: 2px solid red;
+}

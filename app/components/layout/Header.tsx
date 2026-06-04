@@ -5,6 +5,7 @@ import { Phone } from 'lucide-react'
 import type { SiteData } from '~/lib/types'
 
 import { cn } from '~/lib/utils'
+
 import { Image } from '~/components/Image'
 import { Logo } from '~/components/Logo'
 import { SmartLink } from '~/components/SmartLink'
@@ -22,9 +23,13 @@ export function Header({ site }: { site: SiteData }) {
   useEffect(() => setOpen(false), [location.pathname, location.hash])
 
   return (
-    <header className="sticky top-0 z-50 border-b border-ink/8 bg-paper/95 shadow-sm backdrop-blur-sm">
+    <header className="border-ink/8 bg-paper/95 sticky top-0 z-50 border-b shadow-sm backdrop-blur-sm">
       <div className="container-page flex h-16 items-center justify-between gap-4">
-        <SmartLink href="/" className="shrink-0" aria-label={site.settings?.title ?? 'Leteče Kele'}>
+        <SmartLink
+          href="/"
+          className="shrink-0"
+          aria-label={site.settings?.title ?? 'Leteče Kele'}
+        >
           {logo ? (
             <Image
               image={logo}
@@ -35,7 +40,7 @@ export function Header({ site }: { site: SiteData }) {
               className="h-9 w-auto"
             />
           ) : (
-            <Logo showSub className="h-9" />
+            <Logo className="h-12" />
           )}
         </SmartLink>
 
@@ -44,7 +49,7 @@ export function Header({ site }: { site: SiteData }) {
             <SmartLink
               key={item.href}
               href={item.href}
-              className="text-sm font-semibold text-ink-soft transition-colors hover:text-orange"
+              className="text-ink-soft hover:text-orange text-sm font-semibold transition-colors"
             >
               {item.label}
             </SmartLink>
@@ -55,7 +60,7 @@ export function Header({ site }: { site: SiteData }) {
           {phoneHref && phone && (
             <SmartLink
               href={phoneHref}
-              className="flex items-center gap-2 rounded-full bg-orange px-4 py-2.5 text-sm font-bold text-paper transition-colors hover:bg-orange-dark"
+              className="bg-orange text-paper hover:bg-orange-dark flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold transition-colors"
             >
               <Phone size={15} />
               <span>{phone}</span>
@@ -68,18 +73,18 @@ export function Header({ site }: { site: SiteData }) {
               aria-label={open ? 'Zapri meni' : 'Odpri meni'}
               aria-expanded={open}
               onClick={() => setOpen((v) => !v)}
-              className="grid size-9 shrink-0 place-items-center rounded-full border border-ink/15 lg:hidden"
+              className="border-ink/15 grid size-9 shrink-0 place-items-center rounded-full border lg:hidden"
             >
               <span className="relative block size-4">
                 <span
                   className={cn(
-                    'absolute inset-x-0 mx-auto block h-[1.5px] w-4 bg-ink transition-all',
+                    'bg-ink absolute inset-x-0 mx-auto block h-[1.5px] w-4 transition-all',
                     open ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-[5px]',
                   )}
                 />
                 <span
                   className={cn(
-                    'absolute inset-x-0 mx-auto block h-[1.5px] w-4 bg-ink transition-all',
+                    'bg-ink absolute inset-x-0 mx-auto block h-[1.5px] w-4 transition-all',
                     open ? 'top-1/2 -translate-y-1/2 -rotate-45' : 'top-[9px]',
                   )}
                 />
@@ -90,11 +95,14 @@ export function Header({ site }: { site: SiteData }) {
       </div>
 
       {open && nav.length > 0 && (
-        <nav className="border-t border-ink/8 bg-paper lg:hidden">
+        <nav className="border-ink/8 bg-paper border-t lg:hidden">
           <ul className="container-page flex flex-col gap-1 py-4">
             {nav.map((item) => (
               <li key={item.href}>
-                <SmartLink href={item.href} className="block py-2 text-base text-ink">
+                <SmartLink
+                  href={item.href}
+                  className="text-ink block py-2 text-base"
+                >
                   {item.label}
                 </SmartLink>
               </li>
@@ -103,7 +111,7 @@ export function Header({ site }: { site: SiteData }) {
               <li className="pt-2">
                 <SmartLink
                   href={cta.href}
-                  className="block rounded-full bg-orange px-4 py-2.5 text-center text-sm font-bold text-paper"
+                  className="bg-orange text-paper block rounded-full px-4 py-2.5 text-center text-sm font-bold"
                 >
                   {cta.label}
                 </SmartLink>
