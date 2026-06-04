@@ -2,12 +2,38 @@ import { PortableText as BasePortableText } from '@portabletext/react'
 
 import type { PortableTextComponents } from '@portabletext/react'
 import type { PortableTextBlock } from '@portabletext/types'
+import type { SanityImage } from '~/lib/image'
 
+import { SIZES } from '~/lib/image'
 import { cn } from '~/lib/utils'
 
+import { Image } from '~/components/Image'
 import { SmartLink } from '~/components/SmartLink'
 
 const components: PortableTextComponents = {
+  types: {
+    // An inline case-study photo kept in body order (ADR 0003). The asset is
+    // expanded by the body[] FIGURE projection in app/sanity/queries.ts.
+    figure: ({ value }) => {
+      const figure = value as SanityImage
+      const caption = figure.caption ?? figure.alt
+      return (
+        <figure className="my-6 overflow-hidden rounded-2xl">
+          <Image
+            image={figure}
+            sizes={SIZES.prose}
+            alt={figure.alt}
+            className="h-auto w-full object-cover"
+          />
+          {caption ? (
+            <figcaption className="text-ink-soft mt-2 text-sm">
+              {caption}
+            </figcaption>
+          ) : null}
+        </figure>
+      )
+    },
+  },
   block: {
     normal: ({ children }) => <p>{children}</p>,
     h2: ({ children }) => (

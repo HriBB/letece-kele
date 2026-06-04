@@ -21,18 +21,20 @@ export function Gallery({
   if (photos.length === 1) {
     const only = photos[0]
     return (
-      <figure className="overflow-hidden rounded-2xl">
-        <div className="aspect-[16/9]">
+      <figure className="overflow-hidden">
+        <div className="aspect-video">
           <Image
             image={only}
             sizes={SIZES_FULL}
             aspectRatio={16 / 9}
             alt={only.alt ?? title}
-            className="h-full w-full object-cover"
+            className="h-full w-full rounded-2xl object-cover"
           />
         </div>
-        {only.alt ? (
-          <figcaption className="text-ink-soft mt-2 text-sm">{only.alt}</figcaption>
+        {(only.caption ?? only.alt) ? (
+          <figcaption className="text-ink-soft mt-2 text-sm">
+            {only.caption ?? only.alt}
+          </figcaption>
         ) : null}
       </figure>
     )
@@ -45,19 +47,19 @@ export function Gallery({
           key={photo.asset?._id ?? photo.asset?._ref ?? i}
           className="shrink-0 snap-start"
         >
-          <figure className="w-[85vw] max-w-2xl overflow-hidden rounded-2xl sm:w-[70vw]">
-            <div className="aspect-[4/3]">
+          <figure className="w-[85vw] max-w-2xl overflow-hidden sm:w-[70vw]">
+            <div className="aspect-4/3">
               <Image
                 image={photo}
                 sizes="(min-width: 640px) 70vw, 85vw"
                 aspectRatio={4 / 3}
                 alt={photo.alt ?? `${title} — fotografija ${i + 1}`}
-                className="h-full w-full object-cover"
+                className="h-full w-full rounded-2xl object-cover"
               />
             </div>
-            {photo.alt ? (
+            {(photo.caption ?? photo.alt) ? (
               <figcaption className="text-ink-soft mt-2 text-sm">
-                {photo.alt}
+                {photo.caption ?? photo.alt}
               </figcaption>
             ) : null}
           </figure>

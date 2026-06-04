@@ -4,11 +4,13 @@ import type { SanityImageSource } from '@sanity/asset-utils'
 
 import { imageUrlBuilder } from '~/sanity/image'
 
-/** Minimal shape of a Sanity image with optional alt + asset metadata (lqip). */
+/** Minimal shape of a Sanity image with optional alt/caption + asset metadata (lqip). */
 export type SanityImage = {
   _type?: 'image' | 'figure'
   asset?: { _ref?: string; _id?: string; metadata?: { lqip?: string } }
   alt?: string
+  /** Visible label shown under the photo; distinct from the alt text (ADR 0007). */
+  caption?: string
   hotspot?: unknown
   crop?: unknown
   lqip?: string

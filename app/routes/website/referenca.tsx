@@ -3,10 +3,10 @@ import { useLoaderData, useOutletContext } from 'react-router'
 import type { Route } from './+types/referenca'
 import type { WebsiteOutletContext } from './layout'
 
-import { loadSanity } from '~/sanity/data.server'
-import { useSanity } from '~/sanity/data'
-import { projectQuery } from '~/sanity/queries'
 import { pageMeta } from '~/lib/meta'
+import { useSanity } from '~/sanity/data'
+import { loadSanity } from '~/sanity/data.server'
+import { projectQuery } from '~/sanity/queries'
 
 import { ProjectPage } from '~/components/ProjectPage'
 
@@ -26,7 +26,8 @@ export const meta: Route.MetaFunction = ({ data }) => {
   const where = [p.location, p.year].filter(Boolean).join(', ')
   return pageMeta({
     title: `${p.title} — Leteče Kele`,
-    description: p.summary ?? (where ? `${p.title} — ${where}` : `${p.title} — Leteče Kele`),
+    description:
+      p.summary ?? (where ? `${p.title} — ${where}` : `${p.title} — Leteče Kele`),
     ogTitle: p.title,
     ogType: 'article',
   })

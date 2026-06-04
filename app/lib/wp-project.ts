@@ -23,7 +23,7 @@
  * `cleanWpBody`. Imported with an explicit `.ts` path so the seed can run it under
  * `node --experimental-strip-types` (no path-alias resolver there).
  */
-import type { GalleryImage, PortableTextBlock } from './wp-body.ts'
+import type { GalleryImage, PortableTextNode } from './wp-body.ts'
 
 import { cleanWpBody } from './wp-body.ts'
 import { decodeInline, excerptText, firstParagraph } from './wp-text.ts'
@@ -45,11 +45,34 @@ export type ProjectSeedDoc = {
   slug: { _type: 'slug'; current: string }
   year?: number
   summary: string
-  body: PortableTextBlock[]
+  body: PortableTextNode[]
   /** Remote WordPress upload URLs for the gallery (seed uploads each as an asset). */
   galleryUrls: GalleryImage[]
   featured: boolean
   order: number
+}
+
+// WP project titles are ALL CAPS ("PREGLOV TRG 10"); the site wants sentence-case
+// Slovenian ("Preglov trg 10" — see CONTEXT.md, project). Naive sentence-casing
+// lowercases proper nouns, so the titles that contain one carry an explicit override
+// (capitalisation confirmed by the owner). Future posts without an override get the
+// generic transform; mixed-case titles pass through untouched.
+const TITLE_OVERRIDES: Record<string, string> = {
+  'terme-olimia': 'Terme Olimia',
+  'ul-bratov-ucakar': 'Ulica bratov Učakar 44–46',
+  'ulica-bratov': 'Ulica bratov Učakar 40–42',
+  'p-slavija': 'Poslovni center Slavija',
+  'makedonija-jez-sveta-petka-2': 'Makedonija – jez Sveta Petka',
+  'soncna-elektrarna-2': 'Sončna elektrarna Valjavec',
+  'cerkev-na-visokem': 'Cerkev na Visokem',
+}
+
+/** Sentence-case an ALL-CAPS title; anything already mixed-case is left alone. */
+function sentenceCase(title: string): string {
+  const isAllCaps = title === title.toUpperCase() && title !== title.toLowerCase()
+  if (!isAllCaps) return title
+  const lower = title.toLowerCase()
+  return lower.charAt(0).toUpperCase() + lower.slice(1)
 }
 
 export function wpPostToProject(post: WpPost, order: number): ProjectSeedDoc {
@@ -67,7 +90,8 @@ export function wpPostToProject(post: WpPost, order: number): ProjectSeedDoc {
   return {
     _id: `project.${post.slug}`,
     _type: 'project',
-    title: decodeInline(post.title.rendered),
+    title:
+      TITLE_OVERRIDES[post.slug] ?? sentenceCase(decodeInline(post.title.rendered)),
     slug: { _type: 'slug', current: post.slug },
     year,
     summary,

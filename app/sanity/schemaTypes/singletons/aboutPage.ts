@@ -1,5 +1,7 @@
 import { InfoOutlineIcon } from '@sanity/icons'
-import { defineArrayMember, defineField, defineType } from 'sanity'
+import { defineField, defineType } from 'sanity'
+
+import { richBodyMembers } from '../objects/shared'
 
 // The About page (singleton at /o-podjetju). Merges the old o-podjetju, vizija and
 // kvaliteta stub pages plus the alpinist "why we work at height" credibility story
@@ -34,7 +36,7 @@ export const aboutPageType = defineType({
       name: 'body',
       title: 'Company story',
       type: 'array',
-      of: [defineArrayMember({ type: 'block' })],
+      of: richBodyMembers,
       description:
         'The merged narrative — about, vision, quality and the alpinist credibility ' +
         'story as one coherent story, in the words from the old site (formatting junk dropped).',

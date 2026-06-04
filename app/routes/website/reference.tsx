@@ -2,12 +2,12 @@ import { useLoaderData } from 'react-router'
 
 import type { Route } from './+types/reference'
 
-import { loadSanity } from '~/sanity/data.server'
-import { useSanity } from '~/sanity/data'
-import { projectsQuery } from '~/sanity/queries'
-import { pageMeta } from '~/lib/meta'
-import { projectHref } from '~/lib/link'
 import { projectMeta } from '~/lib/format'
+import { projectHref } from '~/lib/link'
+import { pageMeta } from '~/lib/meta'
+import { useSanity } from '~/sanity/data'
+import { loadSanity } from '~/sanity/data.server'
+import { projectsQuery } from '~/sanity/queries'
 
 import { ListingCard } from '~/components/ListingCard'
 
@@ -26,7 +26,7 @@ export default function ReferencesPage() {
 
   return (
     <section className="container-page py-16 sm:py-24">
-      <h1 className="text-4xl font-extrabold leading-tight text-ink sm:text-5xl">
+      <h1 className="text-ink text-4xl leading-tight font-extrabold sm:text-5xl">
         Reference
       </h1>
 
