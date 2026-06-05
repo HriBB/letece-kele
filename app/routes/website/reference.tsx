@@ -1,15 +1,12 @@
-import { useLoaderData } from 'react-router'
+import { useLoaderData, useOutletContext } from 'react-router'
 
 import type { Route } from './+types/reference'
+import type { WebsiteOutletContext } from './layout'
 
-import { projectMeta } from '~/lib/format'
-import { projectHref } from '~/lib/link'
 import { pageMeta } from '~/lib/meta'
 import { useSanity } from '~/sanity/data'
 import { loadSanity } from '~/sanity/data.server'
 import { projectsQuery } from '~/sanity/queries'
-
-import { ListingCard } from '~/components/ListingCard'
 
 export const loader = ({ request }: Route.LoaderArgs) =>
   loadSanity(request, projectsQuery)
@@ -23,25 +20,7 @@ export const meta: Route.MetaFunction = () =>
 
 export default function ReferencesPage() {
   const projects = useSanity(projectsQuery, useLoaderData<typeof loader>()) ?? []
-
-  return (
-    <section className="container-page py-16 sm:py-24">
-      <h1 className="text-ink text-4xl leading-tight font-extrabold sm:text-5xl">
-        Reference
-      </h1>
-
-      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {projects.map((p) => (
-          <ListingCard
-            key={p._id}
-            href={projectHref(p.slug)}
-            image={p.photo}
-            title={p.title}
-            meta={projectMeta(p)}
-            summary={p.summary ?? undefined}
-          />
-        ))}
-      </div>
-    </section>
-  )
+  const { variant } = useOutletContext<WebsiteOutletContext>()
+  const { ProjectList } = variant.pages
+  return <ProjectList projects={projects} />
 }

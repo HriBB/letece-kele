@@ -12,4 +12,13 @@ describe('buildRobotsTxt', () => {
     expect(txt).toContain('Disallow: /resource')
     expect(txt).toContain('Sitemap: https://letecekele.si/sitemap.xml')
   })
+
+  it('blocks all crawlers when disallowAll is true (staging mode, ADR 0008)', () => {
+    const txt = buildRobotsTxt('https://staging.letecekele.si', { disallowAll: true })
+
+    expect(txt).toContain('User-agent: *')
+    expect(txt).toContain('Disallow: /')
+    expect(txt).not.toContain('Allow: /')
+    expect(txt).not.toContain('Sitemap:')
+  })
 })
