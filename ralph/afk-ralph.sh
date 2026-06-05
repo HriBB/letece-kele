@@ -16,7 +16,7 @@ for ((i=1; i<=N; i++)); do
   echo "===== Ralph AFK iteration $i/$N -> $log ====="
 
   claude -p "$(cat ralph/PROMPT.md)" \
-    --model 'claude-sonnet-4-6[1m]' \
+    --model 'claude-sonnet-4-6' \
     --dangerously-skip-permissions \
     2>&1 | tee "$log"
 
@@ -27,7 +27,7 @@ for ((i=1; i<=N; i++)); do
 
   # Anthropic usage/session limit — stop instead of burning the remaining cap on
   # instant-fail iterations. Re-run once quota returns.
-  if grep -qi 'hit your session limit\|usage limit\|rate limit' "$log"; then
+  if grep -qi 'hit your session limit\|usage limit\|rate limit\|usage credits required\|API Error' "$log"; then
     echo "===== Usage limit hit on iteration $i. Stopping; resume after the reset window. ====="
     break
   fi

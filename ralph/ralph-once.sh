@@ -12,7 +12,7 @@ log="ralph/iteration-$ts.log"
 
 echo "===== Ralph (HITL) single iteration -> $log ====="
 claude -p "$(cat ralph/PROMPT.md)" \
-  --model 'claude-sonnet-4-6[1m]' \
+  --model 'claude-sonnet-4-6' \
   --dangerously-skip-permissions \
   2>&1 | tee "$log"
 
