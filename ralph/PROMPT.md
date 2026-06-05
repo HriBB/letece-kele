@@ -29,7 +29,7 @@ Working directory: `/Users/bojan/www/letece-kele/website` (a git repo; stay on t
 
 ## Finish the iteration (then STOP)
 - Commit to the current branch with a clear message ending:
-  `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`
+  `Co-Authored-By: Claude Sonnet 4.6 (1M context) <noreply@anthropic.com>`
 - If — and only if — all acceptance criteria are genuinely met: tick the issue checkboxes and `gh issue close <n> --comment "<summary + typecheck/test/build results>"`. Otherwise leave it open and comment what remains.
 - Tick the matching child checkbox in epic #15.
 - Append a dated entry to `ralph/progress.md`: issue number, what you built, verify results, anything deferred or surprising for the next iteration.
