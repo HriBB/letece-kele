@@ -65,3 +65,29 @@ Issue #17 closed. Epic #15 checkbox ticked.
 Issue #18 closed. Epic #15 checkbox ticked.
 
 **Next:** #19 Construction rugged — rugged construction-site character, kept light-toned.
+
+---
+
+## 2026-06-05 — Issue #19: Variant 4 Construction rugged
+
+**Built:** Full structural variant under `app/variants/construction-rugged/` (11 files: Header, Footer, Home, ServiceList, ServiceDetail, ProjectList, ProjectDetail, About, Contact, NotFound, index.ts). Registered as variant 4 in `app/variants/index.ts` (replaces placeholder).
+
+**Art direction:** Sturdy Manrope black headings throughout; thick orange borders as structural frames (border-l-4, border-t-4, border-4); blocky/chunky layout with tactile material cues. Light surfaces only (paper + bone). Construction signage feel: uppercase bold tracking labels, heavy number indexes.
+
+**Structural patterns (distinct from all three prior variants):**
+- Home hero: headline left + heavy 4px-bordered photo frame right (vs alpine photo-first, swiss text-only, wc shadow cards)
+- ServiceList: thick-bordered rows with large faded number + framed thumbnail on wide screens
+- ServiceDetail: 16:9 heavy-frame photo → left-accent title block → bordered callout box for process steps → left-border CTA strip
+- ProjectList: full-width 16:9 hero reference (first project) + 2/3-col heavy-frame grid for rest
+- ProjectDetail: heavy-frame lead photo → left-accent meta → bordered gallery wrapper → reading zone → left-border CTA strip (ADR 0007 body handled)
+- About: bold left-accent heading → heavy-framed hero image inside bone section → reading zone
+- Contact: left-accent heading → top-orange-accent bordered channel tiles → bordered legal box
+- Header: h-20, 4px orange bottom border, outlined orange CTA, uppercase Manrope nav
+- Footer: bone bg, 4px orange top border, left-accent nav links
+
+**Hard constraints met:** brand orange #f58220 + logo fixed; light surfaces only; same loaders/queries/SEO; no new runtime deps; responsive + accessible.
+
+**Verify:** typecheck ✓ | 104 tests (16 files) ✓ | build ✓
+Issue #19 closed. Epic #15 checkbox ticked.
+
+**Next:** #20 Blueprint/drafting — light paper, technical-drawing linework, grid-paper texture, annotation-style labels.
