@@ -8,8 +8,6 @@ import { useSanity } from '~/sanity/data'
 import { serviceQuery } from '~/sanity/queries'
 import { pageMeta } from '~/lib/meta'
 
-import { ServicePage } from '~/components/ServicePage'
-
 export const loader = ({ params, request }: Route.LoaderArgs) =>
   loadSanity(request, serviceQuery, {
     params: { slug: params.slug },
@@ -33,19 +31,8 @@ export const meta: Route.MetaFunction = ({ data }) => {
 
 export default function ServiceDetailPage() {
   const service = useSanity(serviceQuery, useLoaderData<typeof loader>())
-  const { site } = useOutletContext<WebsiteOutletContext>()
+  const { site, variant } = useOutletContext<WebsiteOutletContext>()
   if (!service) return null
-
-  const contact = site.settings?.contact
-  const cta = site.settings?.headerCta
-
-  return (
-    <ServicePage
-      data={service}
-      phone={contact?.phone}
-      phoneHref={contact?.phoneHref}
-      quoteHref={cta?.href ?? '/kontakt'}
-      quoteLabel={cta?.label ?? 'Povprašajte po ponudbi'}
-    />
-  )
+  const { ServiceDetail } = variant.pages
+  return <ServiceDetail data={service} site={site} />
 }

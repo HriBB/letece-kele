@@ -23,9 +23,11 @@ export const links: Route.LinksFunction = () => [
 
 // Expose the non-secret Sanity project details to the browser via window.ENV so
 // the embedded Studio + react-loader hydration can read them client-side.
+// `staging` drives the noindex meta — keep crawlers off the design-review URL (ADR 0008).
 export const loader = async () => {
   const { projectId, dataset, apiVersion } = projectDetails()
   return data({
+    staging: process.env.SITE_ENV === 'staging',
     ENV: {
       VITE_SANITY_PROJECT_ID: projectId,
       VITE_SANITY_DATASET: dataset,
@@ -33,6 +35,9 @@ export const loader = async () => {
     },
   })
 }
+
+export const meta: Route.MetaFunction = ({ data: loaderData }) =>
+  loaderData?.staging ? [{ name: 'robots', content: 'noindex, nofollow' }] : []
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const loaderData = useLoaderData<typeof loader>() as

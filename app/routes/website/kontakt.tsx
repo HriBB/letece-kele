@@ -5,8 +5,6 @@ import type { WebsiteOutletContext } from './layout'
 
 import { pageMeta } from '~/lib/meta'
 
-import { ContactPage } from '~/components/ContactPage'
-
 // Info-only contact (ADR 0002): no loader of its own — the layout already loads
 // siteSettings and hands it down via the outlet context, exactly like the service
 // and project detail routes. Nothing here writes; there is no form, no server action.
@@ -19,6 +17,7 @@ export const meta: Route.MetaFunction = () =>
   })
 
 export default function ContactRoute() {
-  const { site } = useOutletContext<WebsiteOutletContext>()
-  return <ContactPage settings={site.settings} />
+  const { site, variant } = useOutletContext<WebsiteOutletContext>()
+  const { Contact } = variant.pages
+  return <Contact site={site} />
 }

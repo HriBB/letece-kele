@@ -1,13 +1,12 @@
-import { useLoaderData } from 'react-router'
+import { useLoaderData, useOutletContext } from 'react-router'
 
 import type { Route } from './+types/o-podjetju'
+import type { WebsiteOutletContext } from './layout'
 
 import { loadSanity } from '~/sanity/data.server'
 import { useSanity } from '~/sanity/data'
 import { aboutQuery } from '~/sanity/queries'
 import { pageMeta } from '~/lib/meta'
-
-import { AboutPage } from '~/components/AboutPage'
 
 export const loader = ({ request }: Route.LoaderArgs) =>
   loadSanity(request, aboutQuery)
@@ -26,7 +25,8 @@ export const meta: Route.MetaFunction = ({ data }) => {
 
 export default function AboutRoute() {
   const about = useSanity(aboutQuery, useLoaderData<typeof loader>())
+  const { variant } = useOutletContext<WebsiteOutletContext>()
   if (!about) return null
-
-  return <AboutPage data={about} />
+  const { About } = variant.pages
+  return <About data={about} />
 }

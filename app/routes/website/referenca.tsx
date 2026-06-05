@@ -8,8 +8,6 @@ import { useSanity } from '~/sanity/data'
 import { loadSanity } from '~/sanity/data.server'
 import { projectQuery } from '~/sanity/queries'
 
-import { ProjectPage } from '~/components/ProjectPage'
-
 export const loader = ({ params, request }: Route.LoaderArgs) =>
   loadSanity(request, projectQuery, {
     params: { slug: params.slug },
@@ -35,19 +33,8 @@ export const meta: Route.MetaFunction = ({ data }) => {
 
 export default function ProjectDetailPage() {
   const project = useSanity(projectQuery, useLoaderData<typeof loader>())
-  const { site } = useOutletContext<WebsiteOutletContext>()
+  const { site, variant } = useOutletContext<WebsiteOutletContext>()
   if (!project) return null
-
-  const contact = site.settings?.contact
-  const cta = site.settings?.headerCta
-
-  return (
-    <ProjectPage
-      data={project}
-      phone={contact?.phone}
-      phoneHref={contact?.phoneHref}
-      quoteHref={cta?.href ?? '/kontakt'}
-      quoteLabel={cta?.label ?? 'Povprašajte po ponudbi'}
-    />
-  )
+  const { ProjectDetail } = variant.pages
+  return <ProjectDetail data={project} site={site} />
 }
