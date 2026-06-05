@@ -41,3 +41,27 @@ anything deferred or surprising for the next iteration.
 Issue #17 closed. Epic #15 checkbox ticked.
 
 **Next:** #18 Photo-led alpine — full-bleed rope-work photography, dramatic scale, text on light panels/off-image, no dark scrims.
+
+---
+
+## 2026-06-05 — Issue #18: Variant 3 Photo-led alpine
+
+**Built:** Full structural variant under `app/variants/photo-led-alpine/` (11 files: Header, Footer, Home, ServiceList, ServiceDetail, ProjectList, ProjectDetail, About, Contact, NotFound, index.ts). Registered as variant 3 in `app/variants/index.ts` (replaces placeholder).
+
+**Art direction:** Photography commands every page. Home hero = full-bleed image edge-to-edge (aspect 16:9/21:9), value prop on white panel below — image lands first, text is secondary. No dark scrims, no dark surfaces. Footer: bone bg + 4px orange top-border accent. Header: h-16, rectangular orange CTA on right.
+
+**Structural patterns (distinct from both other variants):**
+- Home hero: photo-first full-bleed → white text panel below (vs wc text-left/photo-right, vs swiss text-only)
+- ServiceList: editorial 3/2 photo-cards (photo top, panel below) vs swiss ruled-list vs wc shadow cards
+- ServiceDetail: full-bleed 16:9 → reading zone → full-width CTA band (vs swiss aside spec-block)
+- ProjectList: asymmetric grid — first 16:9 full-width (hero reference), rest 4:3 2-3 col
+- ProjectDetail: lead photo full-bleed → meta panel → remaining photos in Gallery slider → case-study body (ADR 0007)
+- About: full-bleed hero → white reading zone (no two-col split)
+- Contact: bone-card channel grid (each channel in own card) vs swiss spec-sheet ruled rows
+
+**Hard constraints met:** brand orange #f58220 + logo fixed; light surfaces only; same loaders/queries/SEO; Slovenian labels from CMS; no new runtime deps; responsive + accessible.
+
+**Verify:** typecheck ✓ | 104 tests (16 files) ✓ | build ✓
+Issue #18 closed. Epic #15 checkbox ticked.
+
+**Next:** #19 Construction rugged — rugged construction-site character, kept light-toned.
