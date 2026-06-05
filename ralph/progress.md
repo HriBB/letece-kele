@@ -91,3 +91,31 @@ Issue #18 closed. Epic #15 checkbox ticked.
 Issue #19 closed. Epic #15 checkbox ticked.
 
 **Next:** #20 Blueprint/drafting — light paper, technical-drawing linework, grid-paper texture, annotation-style labels.
+
+---
+
+## 2026-06-05 — Issue #20: Variant 5 Blueprint/drafting
+
+**Built:** Full structural variant under `app/variants/blueprint-drafting/` (11 files: Header, Footer, Home, ServiceList, ServiceDetail, ProjectList, ProjectDetail, About, Contact, NotFound, index.ts). Registered as variant 5 in `app/variants/index.ts` (replaces PLACEHOLDER — all 5 real variants now in picker).
+
+**Art direction:** Engineering-drawing aesthetic throughout. Thin 1px hairline borders (vs 2–4px in rugged/swiss). Corner registration marks (cross hairlines) on every photo frame. Grid-paper texture (repeating-linear-gradient) on bone sections. `font-mono` for all annotation labels; `font-sans` (Inter Variable) for headings — distinct from swiss-technical's Space Grotesk. Orange used on annotation prefixes (§, ↗) and CTAs only. DRW-001·REV A drawing stamp on home hero title block; FIG. n labels on photo frames; ERR-404·REV A stamp on 404.
+
+**Structural patterns (distinct from all four prior variants):**
+- Home hero: bordered "title block" left (engineering drawing title block with stamp) + registration-mark photo right. vs alpine photo-first, swiss text-only metrics, rugged heavy 4px frame, wc shadow-cards.
+- Stats: horizontal measurement table with divide-x columns.
+- Services (home + full list): bordered spec table — thin-ruled rows, each service as numbered spec line.
+- ServiceDetail: photo + FIG. label in thin frame → annotation title block with header bar → steps → notes CTA box.
+- ProjectList: lead 16:9 with FIG. label + footer count stamp; rest in grid with registration marks + FIG. labels.
+- ProjectDetail: photo + fig label → datum annotation header (LOC: / LETO: prefixes) → gallery → body → notes CTA.
+- About: annotation header block → photo with reg. marks + fig label → reading zone with § OPIS label.
+- Contact: spec-sheet table (KANAL | VREDNOST columns, thin ruled rows). vs rugged tiles, swiss ruled rows, alpine editorial.
+- NotFound: centred blueprint stamp card — large faint 404, ERR-404·REV A revision line.
+- Header: h-16, 1px bottom rule, mono nav labels, outlined CTA.
+- Footer: bone + grid texture, 1px top orange rule, mono columns, © REV 1 stamp.
+
+**Hard constraints met:** brand orange #f58220 + logo; light surfaces; same loaders/queries/SEO; Slovenian labels from CMS; no new runtime deps; responsive + accessible.
+
+**Verify:** typecheck ✓ | 104 tests (16 files) ✓ | build ✓
+Issue #20 closed. Epic #15 checkbox ticked.
+
+**Notes:** All five variants are now complete. Epic #15 is fully implemented — the staging site can cycle all five real designs. Next step for the owner: deploy staging + send link to client for the pick.
