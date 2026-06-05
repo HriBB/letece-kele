@@ -2,6 +2,7 @@ import type { Variant, VariantPages } from '~/variants/types'
 
 import { warmCraftsmanPages } from '~/variants/warm-craftsman'
 import { swissTechnicalPages } from '~/variants/swiss-technical'
+import { photoLedAlpinePages } from '~/variants/photo-led-alpine'
 
 export type { Variant, VariantPages }
 
@@ -18,7 +19,7 @@ const PLACEHOLDER: VariantPages = warmCraftsmanPages
 export const variants: Variant[] = [
   { number: 1, slug: 'warm-craftsman', name: 'Topli mojster', pages: warmCraftsmanPages },
   { number: 2, slug: 'swiss-technical', name: 'Švicarska tehnika', pages: swissTechnicalPages },
-  { number: 3, slug: 'photo-led-alpine', name: 'Alpski poudarek', pages: PLACEHOLDER },
+  { number: 3, slug: 'photo-led-alpine', name: 'Alpski poudarek', pages: photoLedAlpinePages },
   { number: 4, slug: 'construction-rugged', name: 'Gradbena moč', pages: PLACEHOLDER },
   { number: 5, slug: 'blueprint-drafting', name: 'Tehnična risba', pages: PLACEHOLDER },
 ]
