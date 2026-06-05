@@ -6,9 +6,13 @@
  * mapper. Imported with an explicit `.ts` path so the seed can run them under
  * `node --experimental-strip-types`.
  */
-import type { PortableTextBlock } from './wp-body.ts'
+import type { PortableTextBlock, PortableTextNode } from './wp-body.ts'
 
 import { cleanWpBody } from './wp-body.ts'
+
+/** Narrow a body node to a text/list block (drops inline figures). */
+const isTextBlock = (b: PortableTextNode): b is PortableTextBlock =>
+  b._type === 'block'
 
 /** The slice of the WordPress REST page/post shape the mappers read. */
 export type WpPage = {
@@ -18,9 +22,12 @@ export type WpPage = {
   content: { rendered: string }
 }
 
-/** Flatten Portable Text blocks back to plain prose. */
-export function plainText(blocks: PortableTextBlock[]): string {
-  return blocks.map((b) => b.children.map((c) => c.text).join('')).join(' ')
+/** Flatten Portable Text nodes back to plain prose (inline figures contribute nothing). */
+export function plainText(blocks: PortableTextNode[]): string {
+  return blocks
+    .filter(isTextBlock)
+    .map((b) => b.children.map((c) => c.text).join(''))
+    .join(' ')
 }
 
 /** Decode a short inline string (e.g. a title) by routing it through the cleaner. */
@@ -32,8 +39,9 @@ export function decodeInline(html: string): string {
  * Text of the first real paragraph — skips a leading heading block so a card
  * summary never just echoes the section title (the body's first <h2>).
  */
-export function firstParagraph(blocks: PortableTextBlock[]): string {
-  const para = blocks.find((b) => b.style === 'normal') ?? blocks[0]
+export function firstParagraph(blocks: PortableTextNode[]): string {
+  const textBlocks = blocks.filter(isTextBlock)
+  const para = textBlocks.find((b) => b.style === 'normal') ?? textBlocks[0]
   return para ? para.children.map((c) => c.text).join('') : ''
 }
 

@@ -1,12 +1,17 @@
 import { describe, expect, it } from 'vitest'
 
-import type { PortableTextBlock } from './wp-body'
+import type { PortableTextBlock, PortableTextNode } from './wp-body'
 
 import { wpPostToProject } from './wp-project'
 
-/** Flatten body blocks back to plain text — to assert the prose is kept verbatim. */
-const text = (blocks: PortableTextBlock[]) =>
-  blocks.map((b) => b.children.map((c) => c.text).join('')).join('\n')
+const isBlock = (b: PortableTextNode): b is PortableTextBlock => b._type === 'block'
+
+/** Flatten body text/list blocks back to plain text (inline figures ignored). */
+const text = (blocks: PortableTextNode[]) =>
+  blocks
+    .filter(isBlock)
+    .map((b) => b.children.map((c) => c.text).join(''))
+    .join('\n')
 
 // A 2012-era WordPress "projekti" post as the REST API returns it: a published
 // date (→ year), entity-encoded title, an excerpt with a "[…]" read-more tail,
@@ -45,6 +50,36 @@ describe('wpPostToProject', () => {
     expect(wpPostToProject(wpPost, 0).title).toBe('Preglov trg 10 & okolica')
   })
 
+  // WP titles are ALL CAPS; the site wants sentence-case Slovenian (CONTEXT.md).
+  it('sentence-cases an ALL-CAPS title', () => {
+    const post = { ...wpPost, title: { rendered: 'PREGLOV TRG 10' } }
+    expect(wpPostToProject(post, 0).title).toBe('Preglov trg 10')
+  })
+
+  it('leaves a mixed-case title untouched', () => {
+    const post = { ...wpPost, title: { rendered: 'Preglov trg 10' } }
+    expect(wpPostToProject(post, 0).title).toBe('Preglov trg 10')
+  })
+
+  it('uses the proper-noun override instead of naive sentence-casing', () => {
+    const post = {
+      ...wpPost,
+      slug: 'terme-olimia',
+      title: { rendered: 'TERME OLIMIA' },
+    }
+    // naive sentence-casing would produce "Terme olimia" — the brand keeps its cap
+    expect(wpPostToProject(post, 0).title).toBe('Terme Olimia')
+  })
+
+  it('keeps the surname capitalised via the override (Ulica bratov Učakar)', () => {
+    const post = {
+      ...wpPost,
+      slug: 'ul-bratov-ucakar',
+      title: { rendered: 'ULICA BRATOV UČAKAR 44–46' },
+    }
+    expect(wpPostToProject(post, 0).title).toBe('Ulica bratov Učakar 44–46')
+  })
+
   it('derives the year from the post publication date', () => {
     expect(wpPostToProject(wpPost, 0).year).toBe(2013)
   })
@@ -65,7 +100,8 @@ describe('wpPostToProject', () => {
         'Delo je potekalo brez gradbenih odrov.',
       ].join('\n'),
     )
-    expect(body[0].style).toBe('h2') // heading stays a heading block
+    const head = body[0]
+    expect(head._type === 'block' && head.style).toBe('h2') // heading stays a heading block
     const json = JSON.stringify(body)
     expect(json).not.toContain('gallery')
     expect(json).not.toContain('margin')
@@ -109,7 +145,10 @@ describe('wpPostToProject', () => {
 
     const doc = wpPostToProject(galleryOnly, 0)
 
-    expect(doc.body).toEqual([])
+    // ADR 0003 — gallery-only: the body carries no prose, only inline figure nodes,
+    // so the detail route renders it as a reference card (not a case study).
+    expect(doc.body.filter(isBlock)).toEqual([])
+    expect(doc.body.every((b) => b._type === 'figure')).toBe(true)
     expect(doc.galleryUrls).toEqual([
       {
         src: 'https://letecekele.si/wp-content/uploads/2012/09/ucakar1.jpg',

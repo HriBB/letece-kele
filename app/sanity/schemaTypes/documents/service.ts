@@ -1,5 +1,7 @@
 import { WrenchIcon } from '@sanity/icons'
-import { defineArrayMember, defineField, defineType } from 'sanity'
+import { defineField, defineType } from 'sanity'
+
+import { richBodyMembers } from '../objects/shared'
 
 // A service (sl: storitev) — one offering the company performs (concrete
 // restoration, dilatation joints, insulation facade, steel-structure restoration,
@@ -40,7 +42,7 @@ export const serviceType = defineType({
       name: 'steps',
       title: 'Process steps',
       type: 'array',
-      of: [defineArrayMember({ type: 'block' })],
+      of: richBodyMembers,
       description: 'The ordered process, in the words from the old site (formatting junk dropped).',
     }),
     defineField({

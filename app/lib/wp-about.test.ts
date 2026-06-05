@@ -1,12 +1,17 @@
 import { describe, expect, it } from 'vitest'
 
-import type { PortableTextBlock } from './wp-body'
+import type { PortableTextBlock, PortableTextNode } from './wp-body'
 
 import { wpPagesToAbout } from './wp-about'
 
-/** Flatten body blocks back to plain text — to assert the prose is kept verbatim. */
-const text = (blocks: PortableTextBlock[]) =>
-  blocks.map((b) => b.children.map((c) => c.text).join('')).join('\n')
+const isBlock = (b: PortableTextNode): b is PortableTextBlock => b._type === 'block'
+
+/** Flatten body text/list blocks back to plain text (inline figures ignored). */
+const text = (blocks: PortableTextNode[]) =>
+  blocks
+    .filter(isBlock)
+    .map((b) => b.children.map((c) => c.text).join(''))
+    .join('\n')
 
 // The old site spread the company story across thin stub pages. These are 2012-era
 // WordPress pages as the REST API returns it: the o-podjetju lead (entity-encoded
@@ -99,9 +104,11 @@ describe('wpPagesToAbout', () => {
     const { body } = wpPagesToAbout(pages)
 
     // The lead opens with prose, not an injected "O podjetju" heading.
-    expect(body[0].style).toBe('normal')
+    const lead = body[0]
+    expect(lead._type === 'block' && lead.style).toBe('normal')
 
     const sectionHeadings = body
+      .filter(isBlock)
       .filter((b) => b.style === 'h2')
       .map((b) => b.children.map((c) => c.text).join(''))
     expect(sectionHeadings).toEqual([
@@ -122,6 +129,7 @@ describe('wpPagesToAbout', () => {
     const { body } = wpPagesToAbout([oPodjetju, vizija, kvaliteta])
     expect(text(body)).not.toContain('Smo izurjeni alpinisti')
     const sectionHeadings = body
+      .filter(isBlock)
       .filter((b) => b.style === 'h2')
       .map((b) => b.children.map((c) => c.text).join(''))
     expect(sectionHeadings).toEqual(['Vizija', 'Kvaliteta'])
@@ -138,7 +146,7 @@ describe('wpPagesToAbout', () => {
 
     const keys = [
       ...body.map((b) => b._key),
-      ...body.flatMap((b) => b.children.map((c) => c._key)),
+      ...body.filter(isBlock).flatMap((b) => b.children.map((c) => c._key)),
     ]
     expect(new Set(keys).size).toBe(keys.length)
   })

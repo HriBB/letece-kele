@@ -1,6 +1,8 @@
 import { CaseIcon } from '@sanity/icons'
 import { defineArrayMember, defineField, defineType } from 'sanity'
 
+import { richBodyMembers } from '../objects/shared'
+
 // A project (sl label + route: "reference") — one completed job the company
 // showcases (ADR 0003). Collection: list at /reference, detail at /reference/:slug.
 // One type, two render depths: a project with a rich `body` reads as a full case
@@ -54,9 +56,9 @@ export const projectType = defineType({
       name: 'body',
       title: 'Case-study body',
       type: 'array',
-      of: [defineArrayMember({ type: 'block' })],
+      of: richBodyMembers,
       description:
-        'Optional case-study narrative (Slovenian prose from the old site, formatting junk dropped). Present → reads as a full case study; empty → reads as a reference card.',
+        'Optional case-study narrative (Slovenian prose from the old site, formatting junk dropped) with inline photos. Prose present → reads as a full case study; figures-only → reads as a reference card.',
     }),
     defineField({
       name: 'featured',

@@ -25,6 +25,8 @@ surface on the home page.
 
 Render depth follows the data: a project with a rich body reads as a full case study; a
 project with only gallery + summary reads as a reference card. One type, two depths.
+(ADR 0007 makes the body rich Portable Text — inline marks, lists, in-order figures — so
+"case study" is decided by prose, and refines the depth split accordingly.)
 
 Naming: the **canonical** term in code/queries/tests is `project`. The **route** and the
 **Slovenian user label** are "reference" (`/reference`) — that is the word that signals

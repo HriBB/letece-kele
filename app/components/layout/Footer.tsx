@@ -13,18 +13,20 @@ export function Footer({ site }: { site: SiteData }) {
   const nav = s?.nav ?? []
 
   return (
-    <footer className="border-t border-ink/8 bg-bone-2 py-14">
+    <footer className="border-ink/8 bg-bone-2 border-t py-14">
       <div className="container-page grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
         {/* Brand */}
         <div className="col-span-1 space-y-4 sm:col-span-2 lg:col-span-1">
-          <Logo showSub className="h-10" />
+          <Logo className="h-12" />
           {footer?.tagline && (
-            <p className="max-w-xs text-sm leading-relaxed text-ink-soft">{footer.tagline}</p>
+            <p className="text-ink-soft max-w-xs text-sm leading-relaxed">
+              {footer.tagline}
+            </p>
           )}
           {contact?.phoneHref && contact?.phone && (
             <SmartLink
               href={contact.phoneHref}
-              className="inline-flex items-center gap-2 rounded-full bg-orange px-4 py-2.5 text-sm font-bold text-paper transition-colors hover:bg-orange-dark"
+              className="bg-orange text-paper hover:bg-orange-dark inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold transition-colors"
             >
               <Phone size={14} />
               {contact.phone}
@@ -35,12 +37,14 @@ export function Footer({ site }: { site: SiteData }) {
         {/* Navigation */}
         {nav.length > 0 && (
           <nav className="space-y-3">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-ink/50">Navigacija</h2>
+            <h2 className="text-ink/50 text-xs font-bold tracking-widest uppercase">
+              Navigacija
+            </h2>
             {nav.map((item) => (
               <SmartLink
                 key={item.href}
                 href={item.href}
-                className="block text-sm font-medium text-ink-soft transition-colors hover:text-orange"
+                className="text-ink-soft hover:text-orange block text-sm font-medium transition-colors"
               >
                 {item.label}
               </SmartLink>
@@ -50,12 +54,14 @@ export function Footer({ site }: { site: SiteData }) {
 
         {/* Contact */}
         <div className="space-y-3">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-ink/50">Kontakt</h2>
-          <div className="space-y-2 text-sm text-ink-soft">
+          <h2 className="text-ink/50 text-xs font-bold tracking-widest uppercase">
+            Kontakt
+          </h2>
+          <div className="text-ink-soft space-y-2 text-sm">
             {contact?.phone && (
               <SmartLink
                 href={contact.phoneHref}
-                className="flex items-center gap-2 hover:text-orange"
+                className="hover:text-orange flex items-center gap-2"
               >
                 <Phone size={13} className="text-orange" />
                 {contact.phone}
@@ -64,7 +70,7 @@ export function Footer({ site }: { site: SiteData }) {
             {contact?.email && (
               <SmartLink
                 href={`mailto:${contact.email}`}
-                className="flex items-center gap-2 hover:text-orange"
+                className="hover:text-orange flex items-center gap-2"
               >
                 <Mail size={13} className="text-orange" />
                 {contact.email}
@@ -72,7 +78,7 @@ export function Footer({ site }: { site: SiteData }) {
             )}
             {contact?.address && (
               <div className="flex items-start gap-2">
-                <MapPin size={13} className="mt-0.5 shrink-0 text-orange" />
+                <MapPin size={13} className="text-orange mt-0.5 shrink-0" />
                 {contact.address}
               </div>
             )}
@@ -82,22 +88,26 @@ export function Footer({ site }: { site: SiteData }) {
         {/* Legal (osnovni podatki) */}
         {legal && (
           <div className="space-y-3">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-ink/50">Podatki</h2>
-            <div className="space-y-1.5 text-xs text-ink-soft">
+            <h2 className="text-ink/50 text-xs font-bold tracking-widest uppercase">
+              Podatki
+            </h2>
+            <div className="text-ink-soft space-y-1.5 text-xs">
               {legal.vat && (
                 <div>
-                  Davčna št. <span className="font-semibold text-ink">{legal.vat}</span>
+                  Davčna št.{' '}
+                  <span className="text-ink font-semibold">{legal.vat}</span>
                 </div>
               )}
               {legal.reg && (
                 <div>
-                  Matična <span className="font-semibold text-ink">{legal.reg}</span>
+                  Matična{' '}
+                  <span className="text-ink font-semibold">{legal.reg}</span>
                 </div>
               )}
               {legal.bankIban && (
                 <div className="pt-1">
                   {legal.bankName}
-                  <div className="font-semibold text-ink">{legal.bankIban}</div>
+                  <div className="text-ink font-semibold">{legal.bankIban}</div>
                 </div>
               )}
             </div>
@@ -106,7 +116,7 @@ export function Footer({ site }: { site: SiteData }) {
       </div>
 
       {footer?.copyright && (
-        <div className="container-page mt-12 border-t border-ink/8 pt-6 text-center text-xs text-ink-soft">
+        <div className="container-page border-ink/8 text-ink-soft mt-12 border-t pt-6 text-center text-xs">
           {footer.copyright}
         </div>
       )}

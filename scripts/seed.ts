@@ -18,14 +18,14 @@ import { randomUUID } from 'node:crypto'
 
 import { createClient } from '@sanity/client'
 
+import type { WpPost } from '../app/lib/wp-project.ts'
+import type { WpPage } from '../app/lib/wp-text.ts'
+
+import { wpPagesToAbout } from '../app/lib/wp-about.ts'
+import { wpPostToProject } from '../app/lib/wp-project.ts'
 // Pure WP → document mappers (clean bodies via the shared cleaner). Imported with
 // explicit .ts paths so they run under `node --experimental-strip-types`.
 import { wpPageToService } from '../app/lib/wp-service.ts'
-import { wpPostToProject } from '../app/lib/wp-project.ts'
-import { wpPagesToAbout } from '../app/lib/wp-about.ts'
-
-import type { WpPost } from '../app/lib/wp-project.ts'
-import type { WpPage } from '../app/lib/wp-text.ts'
 
 const projectId = process.env.SANITY_PROJECT_ID
 const dataset = process.env.SANITY_DATASET ?? 'production'
@@ -36,9 +36,40 @@ if (!projectId || !token) {
   throw new Error('Missing SANITY_PROJECT_ID or SANITY_WRITE_TOKEN in .env')
 }
 
-const client = createClient({ projectId, dataset, apiVersion, token, useCdn: false })
+const client = createClient({
+  projectId,
+  dataset,
+  apiVersion,
+  token,
+  useCdn: false,
+})
 
 const key = () => randomUUID().replace(/-/g, '').slice(0, 12)
+
+// Sanity's asset endpoint occasionally returns a transient 5xx (502 Bad Gateway from
+// the upstream) mid-run. Retry with exponential backoff so one blip doesn't abort the
+// whole seed — the run is idempotent, but restarting re-downloads everything.
+async function withRetry<T>(
+  label: string,
+  fn: () => Promise<T>,
+  attempts = 4,
+): Promise<T> {
+  for (let i = 1; ; i++) {
+    try {
+      return await fn()
+    } catch (err) {
+      const status = (err as { statusCode?: number })?.statusCode
+      const transient =
+        status === undefined || (status >= 500 && status < 600) || status === 429
+      if (!transient || i >= attempts) throw err
+      const delay = 500 * 2 ** (i - 1)
+      console.warn(
+        `  ⚠ ${label}: ${status ?? 'network'} — retry ${i}/${attempts - 1} in ${delay}ms`,
+      )
+      await new Promise((r) => setTimeout(r, delay))
+    }
+  }
+}
 
 // Authored singletons (homePage + aboutPage section copy) are createIfNotExists so a
 // re-seed never clobbers wording a human refined in Studio (ADR 0005: "one-off content
@@ -60,6 +91,12 @@ const ABOUT_PAGE_IDS = [159, 52, 172]
 // A sensible default the editor can curate in Studio; the home falls back to the
 // first N anyway (selectFeaturedProjects), so an unflagged dataset still renders.
 const FEATURED_COUNT = 3
+
+// The home hero lead photo: an alpinist on rope mid-facade (chosen from the WP media
+// library). Lifted to the full-size original by the suffix-strip in wp-body, but this
+// one is referenced directly so it's a bare WP upload URL. The editor can swap it in
+// Studio afterwards (the field is just `homePage.hero.image`).
+const HOME_HERO_URL = `${WP_BASE}/wp-content/uploads/2021/01/Samsung-2021-2200.jpg`
 
 // The alpinist "why we work at height" credibility story — a capability framing
 // folded into the About page (issue #6). This is NOT a migrated page: the personal
@@ -101,6 +138,7 @@ const assetByUrl = new Map<string, string>()
 async function uploadFigure(
   url: string | undefined,
   alt: string,
+  caption?: string,
 ): Promise<Record<string, unknown> | undefined> {
   if (!url) return undefined
   let assetId = assetByUrl.get(url)
@@ -109,7 +147,9 @@ async function uploadFigure(
     if (!res.ok) throw new Error(`image ${url}: HTTP ${res.status}`)
     const filename = decodeURIComponent(url.split('/').pop() ?? 'photo.jpg')
     const buffer = Buffer.from(await res.arrayBuffer())
-    const asset = await client.assets.upload('image', buffer, { filename })
+    const asset = await withRetry(`upload ${filename}`, () =>
+      client.assets.upload('image', buffer, { filename }),
+    )
     assetId = asset._id
     assetByUrl.set(url, assetId)
   }
@@ -117,6 +157,7 @@ async function uploadFigure(
     _type: 'figure',
     asset: { _type: 'reference', _ref: assetId },
     alt,
+    ...(caption ? { caption } : {}),
   }
 }
 
@@ -126,21 +167,49 @@ async function seedServices() {
     const page = await fetchWpPage(id)
     const { photoUrl, ...doc } = wpPageToService(page, i)
     const photo = await uploadFigure(photoUrl, doc.title)
-    await client.createOrReplace({ ...doc, photo })
+    const steps = await uploadBodyFigures(doc.steps)
+    await client.createOrReplace({ ...doc, steps, photo })
     console.log(`  ✓ service.${doc.slug.current} ("${doc.title}")`)
   }
 }
 
 /** Upload each lifted gallery image as a keyed `figure` for `project.gallery`. */
 async function uploadGallery(
-  images: { src: string; alt: string }[],
+  images: { src: string; alt: string; caption?: string }[],
 ): Promise<Record<string, unknown>[]> {
   const figures: Record<string, unknown>[] = []
   for (const img of images) {
-    const figure = await uploadFigure(img.src, img.alt)
+    const figure = await uploadFigure(img.src, img.alt, img.caption)
     if (figure) figures.push({ ...figure, _key: key() })
   }
   return figures
+}
+
+/**
+ * Walk a cleaned rich body (project.body / service.steps / aboutPage.body) and turn
+ * every inline `{ _type:'figure', url }` node into an uploaded asset ref in place,
+ * keeping its `_key` and body order (ADR 0003 — inline case-study photos). Text/list
+ * blocks pass through untouched. The per-URL `assetByUrl` dedupe means an image kept
+ * both inline and in the gallery resolves to one asset.
+ */
+async function uploadBodyFigures(body: unknown[] | undefined): Promise<unknown[]> {
+  const out: unknown[] = []
+  for (const node of body ?? []) {
+    const n = node as {
+      _type?: string
+      _key?: string
+      url?: string
+      alt?: string
+      caption?: string
+    }
+    if (n._type === 'figure') {
+      const figure = await uploadFigure(n.url, n.alt ?? '', n.caption)
+      if (figure) out.push({ ...figure, _key: n._key ?? key() })
+    } else {
+      out.push(node)
+    }
+  }
+  return out
 }
 
 async function seedProjects() {
@@ -149,8 +218,14 @@ async function seedProjects() {
   for (const [i, post] of posts.entries()) {
     const { galleryUrls, ...doc } = wpPostToProject(post, i)
     const gallery = await uploadGallery(galleryUrls)
+    const body = await uploadBodyFigures(doc.body)
     // Flag the first few as featured for the home strip (editor curates in Studio).
-    await client.createOrReplace({ ...doc, gallery, featured: i < FEATURED_COUNT })
+    await client.createOrReplace({
+      ...doc,
+      body,
+      gallery,
+      featured: i < FEATURED_COUNT,
+    })
     console.log(`  ✓ project.${doc.slug.current} ("${doc.title}")`)
   }
 }
@@ -162,9 +237,14 @@ async function seedAbout() {
   // Merge the about pages + the authored alpinist story into the one singleton.
   const { heroUrl, ...doc } = wpPagesToAbout([...pages, ALPINIST_STORY])
   const heroImage = await uploadFigure(heroUrl, doc.title)
-  const about = { ...doc, heroImage }
-  await (FORCE_AUTHORED ? client.createOrReplace(about) : client.createIfNotExists(about))
-  console.log(`  ✓ aboutPage ("${doc.title}")${FORCE_AUTHORED ? '' : ' (createIfNotExists)'}`)
+  const body = await uploadBodyFigures(doc.body)
+  const about = { ...doc, body, heroImage }
+  await (FORCE_AUTHORED
+    ? client.createOrReplace(about)
+    : client.createIfNotExists(about))
+  console.log(
+    `  ✓ aboutPage ("${doc.title}")${FORCE_AUTHORED ? '' : ' (createIfNotExists)'}`,
+  )
 }
 
 const NAV = [
@@ -179,7 +259,11 @@ const siteSettings = {
   _type: 'siteSettings',
   title: 'Leteče Kele',
   nav: NAV.map((n) => ({ _key: key(), _type: 'navLink', ...n })),
-  headerCta: { _type: 'ctaLink', label: 'Povprašajte po ponudbi', href: '/kontakt' },
+  headerCta: {
+    _type: 'ctaLink',
+    label: 'Povprašajte po ponudbi',
+    href: '/kontakt',
+  },
   contact: {
     phone: '040 465 749',
     phoneHref: 'tel:+38640465749',
@@ -210,13 +294,23 @@ const block = (text: string) => ({
   markDefs: [],
   children: [{ _key: key(), _type: 'span', text, marks: [] }],
 })
-const stat = (value: string, label: string) => ({ _key: key(), _type: 'stat', value, label })
-const feature = (title: string, body: string) => ({ _key: key(), _type: 'feature', title, body })
+const stat = (value: string, label: string) => ({
+  _key: key(),
+  _type: 'stat',
+  value,
+  label,
+})
+const feature = (title: string, body: string) => ({
+  _key: key(),
+  _type: 'feature',
+  title,
+  body,
+})
 
 // The home page singleton — the variant-5 "Warm craftsman" fold-in (issue #8). Only
 // authored section copy lives here; the services teaser and featured strip render the
 // same `service` / `project` documents seeded above (ADR 0003). The hero photo is
-// attached by a human in Studio with the live seed (deferred).
+// uploaded from HOME_HERO_URL in main() and attached as `hero.image`.
 const homePage = {
   _id: 'homePage',
   _type: 'homePage',
@@ -310,7 +404,11 @@ async function main() {
   await seedAbout()
   console.log('✓ seeded aboutPage')
 
-  await (FORCE_AUTHORED ? client.createOrReplace(homePage) : client.createIfNotExists(homePage))
+  const heroImage = await uploadFigure(HOME_HERO_URL, homePage.hero.heading)
+  const home = { ...homePage, hero: { ...homePage.hero, image: heroImage } }
+  await (FORCE_AUTHORED
+    ? client.createOrReplace(home)
+    : client.createIfNotExists(home))
   console.log(`✓ seeded homePage${FORCE_AUTHORED ? '' : ' (createIfNotExists)'}`)
 }
 

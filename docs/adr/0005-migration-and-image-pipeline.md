@@ -19,7 +19,9 @@ responsive sizes, no layout shift, and a fast placeholder.
 
 - Pull pages, posts, and media from the WordPress REST API.
 - **Clean** on the way in: strip inline styles and gallery shortcodes, lift embedded
-  images into the `project.gallery` field, convert prose to **Portable Text**.
+  images into the `project.gallery` field, convert prose to **Portable Text**. (ADR 0007
+  makes this rich: inline link/strong/em marks, bullet/number lists, and each embedded
+  image kept inline as an in-order `figure` *as well as* lifted into the gallery.)
 - **Map**: WordPress service pages → `service`; the *o-podjetju*/*vizija*/*kvaliteta*
   pages → the `aboutPage` singleton; `projekti`-category posts → `project`; legal
   *osnovni podatki* → `siteSettings`. Personal blog posts are **not** migrated (ADR 0002).

@@ -13,7 +13,7 @@
  * `cleanWpBody`. Imported with an explicit `.ts` path so the seed can run it under
  * `node --experimental-strip-types` (no path-alias resolver there).
  */
-import type { PortableTextBlock } from './wp-body.ts'
+import type { PortableTextNode } from './wp-body.ts'
 import type { WpPage } from './wp-text.ts'
 
 import { cleanWpBody } from './wp-body.ts'
@@ -28,7 +28,7 @@ export type ServiceSeedDoc = {
   title: string
   slug: { _type: 'slug'; current: string }
   description: string
-  steps: PortableTextBlock[]
+  steps: PortableTextNode[]
   /** Remote WordPress upload URL for the representative photo (seed uploads it). */
   photoUrl?: string
   order: number

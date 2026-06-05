@@ -30,11 +30,26 @@ export function ProjectPage({
   const { title, location, year, summary, gallery, body } = data
   const meta = projectMeta({ location, year })
   const photos = (gallery ?? []).filter(Boolean)
-  const hasBody = Boolean(body && body.length > 0)
+  const nodes = body ?? []
+
+  // ADR 0003 — one type, two depths. A body with real prose reads as a full case
+  // study (render it inline); a body with no prose reads as a reference card.
+  const hasProse = nodes.some(
+    (b) =>
+      (b as { _type?: string })._type === 'block' &&
+      Array.isArray((b as { children?: unknown[] }).children) &&
+      (b as { children: { text?: unknown }[] }).children.some(
+        (c) => typeof c.text === 'string' && c.text.trim() !== '',
+      ),
+  )
+  // The gallery strip shows whenever the project has photos (ADR 0007): the strip
+  // is the at-a-glance overview, the inline body figures the narrative placement —
+  // the two showing the same photos is accepted.
+  const showGallery = photos.length > 0
 
   return (
     <article className="container-page py-16 sm:py-24">
-      <header className="max-w-3xl">
+      <header className="mx-auto max-w-3xl">
         <h1 className="text-ink text-4xl leading-tight font-extrabold sm:text-5xl">
           {title}
         </h1>
@@ -44,15 +59,18 @@ export function ProjectPage({
         ) : null}
       </header>
 
-      {photos.length > 0 ? (
+      {showGallery ? (
         <div className="mt-10">
           <Gallery images={photos} title={title} />
         </div>
       ) : null}
 
-      {hasBody ? (
+      {hasProse ? (
         <section className="mt-12">
-          <PortableText value={body} className="text-ink-soft mt-5 max-w-3xl" />
+          <PortableText
+            value={body}
+            className="text-ink-soft mx-auto mt-5 max-w-3xl"
+          />
         </section>
       ) : null}
 

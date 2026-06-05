@@ -17,9 +17,19 @@ import { defineSanityQuery } from '~/sanity/data'
 export const FIGURE = /* groq */ `{
   _type,
   alt,
+  caption,
   hotspot,
   crop,
   asset->{ _id, metadata { lqip, dimensions } }
+}`
+
+// A rich case-study / process body: keep every block as-is, but expand the asset on
+// any inline `figure` node so it can render responsively (ADR 0003 — inline photos
+// keep their place in the narrative). Used for project.body, service.steps,
+// aboutPage.body. `_key` rides along via the spread for stable React keys.
+export const BODY = /* groq */ `[]{
+  ...,
+  _type == "figure" => ${FIGURE}
 }`
 
 // Site-wide settings (header nav, footer, contact, legal) wrapping every route.
@@ -57,7 +67,7 @@ export const SERVICE_BY_SLUG_QUERY = groq`*[_type == "service" && slug.current =
   description,
   "slug": slug.current,
   "photo": photo${FIGURE},
-  steps
+  "steps": steps${BODY}
 }`
 
 // All projects for the /reference listing, in editor-defined order. The lead photo
@@ -82,7 +92,7 @@ export const PROJECT_BY_SLUG_QUERY = groq`*[_type == "project" && slug.current =
   summary,
   "slug": slug.current,
   "gallery": gallery[]${FIGURE},
-  body
+  "body": body${BODY}
 }`
 
 // The home page (singleton at `/`) — the variant-5 fold-in (issue #8). One wrapped
@@ -142,7 +152,7 @@ export const ABOUT_QUERY = groq`*[_type == "aboutPage"][0]{
   title,
   intro,
   "heroImage": heroImage${FIGURE},
-  body
+  "body": body${BODY}
 }`
 
 // Descriptors — each binds a query string to its result type (and params type,

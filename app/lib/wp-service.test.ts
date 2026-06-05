@@ -1,12 +1,17 @@
 import { describe, expect, it } from 'vitest'
 
-import type { PortableTextBlock } from './wp-body'
+import type { PortableTextBlock, PortableTextNode } from './wp-body'
 
 import { wpPageToService } from './wp-service'
 
-/** Flatten step blocks back to plain text — to assert the prose is kept verbatim. */
-const text = (blocks: PortableTextBlock[]) =>
-  blocks.map((b) => b.children.map((c) => c.text).join('')).join('\n')
+const isBlock = (b: PortableTextNode): b is PortableTextBlock => b._type === 'block'
+
+/** Flatten step text/list blocks back to plain text (inline figures ignored). */
+const text = (blocks: PortableTextNode[]) =>
+  blocks
+    .filter(isBlock)
+    .map((b) => b.children.map((c) => c.text).join(''))
+    .join('\n')
 
 // A 2012-era WordPress service page as the REST API returns it: entity-encoded
 // title, an excerpt with a "[…]" read-more tail, and a body carrying inline
@@ -61,7 +66,8 @@ describe('wpPageToService', () => {
         'Nato nanesemo zaščitni premaz.',
       ].join('\n'),
     )
-    expect(steps[0].style).toBe('h2') // heading stays a heading block
+    const head = steps[0]
+    expect(head._type === 'block' && head.style).toBe('h2') // heading stays a heading block
     const json = JSON.stringify(steps)
     expect(json).not.toContain('gallery')
     expect(json).not.toContain('margin')
@@ -81,5 +87,27 @@ describe('wpPageToService', () => {
     expect(wpPageToService(noExcerpt, 0).description).toBe(
       'Najprej pregledamo betonsko površino in odstranimo nevezane delce.',
     )
+  })
+
+  it('keeps a process <ul> as ordered bullet list-item steps', () => {
+    const withList = {
+      ...wpPage,
+      content: {
+        rendered: [
+          '<h2>Postopek</h2>',
+          '<ul><li>Pregled površine.</li><li>Odstranitev nevezanih delcev.</li><li>Nanos premaza.</li></ul>',
+        ].join('\n'),
+      },
+    }
+
+    const { steps } = wpPageToService(withList, 0)
+    const items = steps.filter(isBlock).filter((b) => b.listItem)
+
+    expect(items.map((b) => b.children.map((c) => c.text).join(''))).toEqual([
+      'Pregled površine.',
+      'Odstranitev nevezanih delcev.',
+      'Nanos premaza.',
+    ])
+    expect(items.every((b) => b.listItem === 'bullet')).toBe(true)
   })
 })

@@ -15,7 +15,11 @@
  * path so the seed can run it under `node --experimental-strip-types` (no path-alias
  * resolver there).
  */
-import type { GalleryImage, PortableTextBlock } from './wp-body.ts'
+import type {
+  GalleryImage,
+  PortableTextBlock,
+  PortableTextNode,
+} from './wp-body.ts'
 import type { WpPage } from './wp-text.ts'
 
 import { cleanWpBody } from './wp-body.ts'
@@ -29,7 +33,7 @@ export type AboutSeedDoc = {
   _type: 'aboutPage'
   title: string
   intro: string
-  body: PortableTextBlock[]
+  body: PortableTextNode[]
   /** Remote WordPress upload URL for the hero (seed uploads it as an asset). */
   heroUrl?: string
 }
@@ -53,7 +57,7 @@ export function wpPagesToAbout(pages: WpPage[]): AboutSeedDoc {
   // stub page (vizija / kvaliteta / the alpinist story) opens with its title as an
   // h2, turning separate stub pages into sections of one coherent story. Embedded
   // images are lifted out of the prose, in document order, for the hero photo.
-  const merged: PortableTextBlock[] = []
+  const merged: PortableTextNode[] = []
   const gallery: GalleryImage[] = []
   pages.forEach((page, i) => {
     const cleaned = cleanWpBody(page.content.rendered)
@@ -64,11 +68,16 @@ export function wpPagesToAbout(pages: WpPage[]): AboutSeedDoc {
 
   // Re-key after merge: each cleanWpBody call numbers its blocks from 0, so plain
   // concatenation collides keys — Sanity requires unique _keys within an array.
-  const body = merged.map((b, i) => ({
-    ...b,
-    _key: `b${i}`,
-    children: b.children.map((c, j) => ({ ...c, _key: `b${i}s${j}` })),
-  }))
+  // Inline figures have no children; only text blocks re-key their spans.
+  const body: PortableTextNode[] = merged.map((b, i) =>
+    b._type === 'figure'
+      ? { ...b, _key: `b${i}` }
+      : {
+          ...b,
+          _key: `b${i}`,
+          children: b.children.map((c, j) => ({ ...c, _key: `b${i}s${j}` })),
+        },
+  )
 
   // Short intro: the first page's excerpt (read-more tail dropped by the shared helper).
   const intro = excerptText(first?.excerpt?.rendered)

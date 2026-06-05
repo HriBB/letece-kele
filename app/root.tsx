@@ -1,6 +1,7 @@
 import {
   data,
   isRouteErrorResponse,
+  Link,
   Links,
   Meta,
   Outlet,
@@ -67,25 +68,42 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = 'Oops!'
-  let details = 'Prišlo je do nepričakovane napake.'
+  const is404 = isRouteErrorResponse(error) && error.status === 404
+
+  let eyebrow = 'Napaka'
+  let heading = 'Nekaj je šlo narobe'
+  let details = 'Prišlo je do nepričakovane napake. Poskusite znova čez nekaj trenutkov.'
   let stack: string | undefined
 
-  if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? '404' : 'Napaka'
+  if (is404) {
+    eyebrow = '404'
+    heading = 'Strani ni mogoče najti'
     details =
-      error.status === 404 ? 'Strani ni mogoče najti.' : error.statusText || details
-  } else if (error && error instanceof Error) {
+      'Stran, ki jo iščete, ne obstaja ali pa je bila premaknjena. Vrnite se na domačo stran.'
+  } else if (isRouteErrorResponse(error)) {
+    details = error.statusText || details
+  } else if (error instanceof Error) {
     details = error.message
     stack = error.stack
   }
 
   return (
-    <main className="container-page py-24">
-      <h1 className="text-4xl font-bold">{message}</h1>
-      <p className="mt-4 text-muted-foreground">{details}</p>
+    <main className="container-page flex min-h-dvh flex-col items-center justify-center py-24 text-center">
+      <p className="text-orange font-manrope text-sm font-extrabold tracking-widest uppercase">
+        {eyebrow}
+      </p>
+      <h1 className="text-ink mt-4 text-4xl leading-tight font-extrabold sm:text-5xl">
+        {heading}
+      </h1>
+      <p className="text-ink-soft mt-5 max-w-xl text-lg leading-relaxed">{details}</p>
+      <Link
+        to="/"
+        className="bg-orange text-paper hover:bg-orange-dark font-manrope mt-8 inline-flex items-center gap-3 rounded-full px-7 py-4 text-lg font-extrabold transition-colors"
+      >
+        Nazaj na domačo stran
+      </Link>
       {stack && (
-        <pre className="mt-6 w-full overflow-x-auto rounded-lg bg-muted p-4 text-sm">
+        <pre className="bg-ink/5 mt-10 w-full max-w-3xl overflow-x-auto rounded-lg p-4 text-left text-sm">
           <code>{stack}</code>
         </pre>
       )}
