@@ -24,3 +24,20 @@ anything deferred or surprising for the next iteration.
 **Notes for next iteration:**
 - All pre-existing scaffolding files (`design.server.ts`, `resource/design.ts`, `Picker.tsx`, `variants/index.ts`, `variants/types.ts`, all warm-craftsman pages) were untracked on the branch — committed here in one go alongside this iteration's completions.
 - Next: #17 Swiss technical — full page tree under `app/variants/swiss-technical/`. Structurally distinct from warm craftsman; not a reskin.
+
+---
+
+## 2026-06-05 — Issue #17: Variant 2 Swiss technical
+
+**Built:** Full structural variant under `app/variants/swiss-technical/` (11 files: Header, Footer, Home, ServiceList, ServiceDetail, ProjectList, ProjectDetail, About, Contact, NotFound, index.ts). Registered as variant 2 in `app/variants/index.ts` (replaces placeholder).
+
+**Art direction:** Paper-white surfaces throughout; thin horizontal rules as primary structure (no card shadows); Space Grotesk for all labels, numbers, nav (no Manrope). Orange used sparingly: index numbers, CTA buttons, left-rule borders, metadata. Data-forward home hero — value prop left + right-side key-metrics grid (no hero photo). Services as numbered rule list. Projects as metadata-heavy gap-px grid (location · year prominent). Why-us as filled cell grid. ServiceDetail: process steps in left-bordered spec block + sidebar CTA panel. Contact: ruled spec-sheet rows (label/value), not card grid. No rounded-full anywhere.
+
+**Structurally distinct from warm craftsman:** every route group uses a completely different layout pattern — not a token reskin.
+
+**Hard constraints met:** brand orange #f58220 + logo fixed; light surfaces only; same content/loaders/queries/SEO; Slovenian labels from CMS; no new runtime deps; responsive + accessible.
+
+**Verify:** typecheck ✓ | 104 tests (16 files) ✓ | build ✓
+Issue #17 closed. Epic #15 checkbox ticked.
+
+**Next:** #18 Photo-led alpine — full-bleed rope-work photography, dramatic scale, text on light panels/off-image, no dark scrims.
