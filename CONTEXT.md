@@ -24,6 +24,8 @@ CMS content, never hardcoded.
 | **siteSettings** | Singleton: header nav, footer, contact details, legal/company data (*osnovni podatki* — address, tax/registration no., bank), CTA. Wraps every route. | — | — |
 | **homePage** | Singleton driving the home sections (hero, services teaser, featured projects, why-us strip, contact CTA). | — | — |
 | **aboutPage** | Singleton at `/o-podjetju`. Merges the old *o-podjetju*, *vizija*, *kvaliteta* pages and the alpinist "why we work at height" credibility story into one About page. | — | — |
+| **variant** | One of five site-wide design directions (warm craftsman, Swiss technical, photo-led alpine, construction rugged, blueprint/drafting) the client chooses between. Same content and routes in every variant; only presentation differs. All variants keep brand orange + logo and stay light-toned. Temporary concept — dissolves once the client picks. | design, theme, skin | dizajn |
+| **picker** | The floating left/right control on the staging site the client uses to cycle variants. A viewing control only — the pick itself is communicated to us, not recorded. | switcher, dropdown | — |
 
 ## Routes
 
@@ -42,3 +44,4 @@ See `docs/adr/`:
 - [0005 — Migration source + image pipeline](docs/adr/0005-migration-and-image-pipeline.md)
 - [0006 — Docker self-host deployment](docs/adr/0006-docker-self-host-deploy.md)
 - [0007 — Rich case-study body (inline marks, lists, in-order figures)](docs/adr/0007-rich-case-study-body.md)
+- [0008 — Client design selection via five structural variants](docs/adr/0008-client-design-selection-via-structural-variants.md)
